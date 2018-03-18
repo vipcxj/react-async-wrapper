@@ -1,0 +1,64 @@
+{
+  "name": "react-async",
+  "version": "0.0.1",
+  "description": "resolve async props for react component",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vipcxj/react-async.git"
+  },
+  "license": "MIT",
+  "author": "Xiaojing Chen <vipcxj@126.com> (https://github.com/vipcxj)",
+  "bugs": {
+    "url": "https://github.com/vipcxj/react-async/issues"
+  },
+  "scripts": {
+    "build": "node ./tools/build.js"
+  },
+  "peerDependencies": {
+    "react": ">=16",
+    "prop-types": ">=15"
+  },
+  "dependencies": {
+    "is-promise": "^2.1.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.42",
+    "@babel/core": "^7.0.0-beta.42",
+    "@babel/helper-plugin-utils": "^7.0.0-beta.42",
+    "@babel/plugin-external-helpers": "^7.0.0-beta.42",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.42",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.42",
+    "@babel/polyfill": "^7.0.0-beta.42",
+    "@babel/preset-env": "^7.0.0-beta.42",
+    "@babel/preset-react": "^7.0.0-beta.42",
+    "@storybook/addon-info": "^3.3.15",
+    "@storybook/react": "^3.3.15",
+    "@types/lodash": "^4.14.105",
+    "@types/prop-types": "^15.5.2",
+    "@types/react": "^16.0.40",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-plugin-dev-expression": "^0.2.1",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.13",
+    "eslint": "^4.19.0",
+    "eslint-plugin-react": "^7.7.0",
+    "gzip-size": "^4.1.0",
+    "lodash": "^4.17.5",
+    "pretty-bytes": "^4.0.2",
+    "prop-types": "^15.6.1",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "redbox-react": "^1.5.0",
+    "rollup": "^0.57.1",
+    "rollup-analyzer-plugin": "^1.1.1",
+    "rollup-plugin-babel": "^4.0.0-beta.2",
+    "rollup-plugin-commonjs": "^9.1.0",
+    "rollup-plugin-node-resolve": "^3.2.0",
+    "rollup-plugin-peer-deps-external": "^2.1.0",
+    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-uglify": "^3.0.0"
+  },
+  "keywords": [
+    "react",
+    "async"
+  ]
+}
