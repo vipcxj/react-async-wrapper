@@ -2,6 +2,8 @@
   "name": "react-async",
   "version": "0.0.1",
   "description": "resolve async props for react component",
+  "main": "build/cjs/react-async.js",
+  "module": "build/es/react-async.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/vipcxj/react-async.git"
@@ -37,9 +39,13 @@
     "@types/prop-types": "^15.5.2",
     "@types/react": "^16.0.40",
     "babel-core": "^7.0.0-bridge.0",
+    "babel-eslint": "^8.2.2",
     "babel-plugin-dev-expression": "^0.2.1",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.13",
     "eslint": "^4.19.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.9.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
     "gzip-size": "^4.1.0",
     "lodash": "^4.17.5",
