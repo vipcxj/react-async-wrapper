@@ -1,4 +1,4 @@
-export const some = (arr, pred) =>{
+export const some = (arr, pred) => {
     arr = arr || [];
     for (let i = 0; i < arr.length; ++i) {
         if (pred && pred(arr[i])) {
@@ -8,7 +8,7 @@ export const some = (arr, pred) =>{
     return false;
 };
 
-export const toPairs = obj => obj ? Object.keys(obj).map(k => [k, obj[k]]) : [];
+export const toPairs = obj => (obj ? Object.keys(obj).map(k => [k, obj[k]]) : []);
 
 export const fromPairs = (arr) => {
     const ret = {};
@@ -16,4 +16,4 @@ export const fromPairs = (arr) => {
     return ret;
 };
 
-export const isFunction = func => typeof func === "function";
+export const isFunction = func => typeof func === 'function';

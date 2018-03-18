@@ -1,3 +1,4 @@
+/* eslint-disable */
 const { declare } = require('@babel/helper-plugin-utils');
 
 const plugins = [

@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs');
 const execSync = require('child_process').execSync;
 const prettyBytes = require('pretty-bytes');
@@ -22,6 +23,7 @@ const name = 'react-async';
         NODE_ENV: 'production',
         FILE_NAME: name,
     });
+    // noinspection JSUnresolvedFunction
     const size = gzipSize.sync(
         fs.readFileSync(`build/${mode}/${name}.min.js`)
     );
