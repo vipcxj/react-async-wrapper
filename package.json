@@ -4,6 +4,11 @@
   "description": "resolve async props for react component",
   "main": "cjs/index.js",
   "module": "es/index.js",
+  "files": [
+    "cjs",
+    "es",
+    "umd"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/vipcxj/react-async.git"
