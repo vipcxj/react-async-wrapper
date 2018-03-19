@@ -1,9 +1,9 @@
-# react-async
+# react-async-wrapper
 
-Async helper component for [React](https://reactjs.org/).
+Async component wrapper for [React](https://reactjs.org/).
 
 ## Installation
 
 Using [npm](https://www.npmjs.com/):
 
-    $ npm install --save react-async
+    $ npm install --save react-async-wrapper

@@ -1,5 +1,5 @@
 {
-  "name": "react-async",
+  "name": "react-async-wrapper",
   "version": "0.0.1",
   "description": "resolve async props for react component",
   "main": "cjs/index.js",
