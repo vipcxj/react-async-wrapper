@@ -34,6 +34,7 @@ const name = 'index';
             BABEL_ENV: format,
             NODE_ENV: 'development',
             FILE_NAME: name,
+            TOOL_SET: tool,
             EXT: ext,
         });
         console.log(`\nBuilding production ${format} module ...`);
@@ -42,6 +43,7 @@ const name = 'index';
             NODE_ENV: 'production',
             FILE_NAME: name,
             ANALYZER: analyzer,
+            TOOL_SET: tool,
             EXT: ext,
         });
         // noinspection JSUnresolvedFunction
@@ -54,6 +56,7 @@ const name = 'index';
         exec(`babel src -d ${format} --ignore __tests__`, {
             BABEL_ENV: format,
             NODE_ENV: 'development',
+            TOOL_SET: tool,
         });
     }
 });

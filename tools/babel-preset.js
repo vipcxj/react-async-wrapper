@@ -15,12 +15,29 @@ if (process.env.NODE_ENV === 'production') {
     );
 }
 
+const format = process.env.BABEL_ENV;
+const toolSet = process.env.TOOL_SET;
+let modules = false;
+if (toolSet === 'babel') {
+    if (format !== 'es') {
+        if (format === 'cjs') {
+            modules = 'commonjs';
+        } else {
+            modules = format;
+        }
+    }
+}
+
+if (modules) {
+    plugins.push('add-module-exports');
+}
+
 module.exports = declare(({ assertVersion }) => {
     assertVersion(7);
     return {
         presets: [
             [ '@babel/env', {
-                modules: false,
+                modules,
                 loose: true,
             } ],
             '@babel/react'
