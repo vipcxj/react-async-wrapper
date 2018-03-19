@@ -5,7 +5,7 @@ import isPromise from 'is-promise';
 import { some, toPairs, fromPairs, isFunction } from './utils';
 
 const DefaultLoadingComponent = () => null;
-let DefaultErrorComponent = () => null;
+const DefaultErrorComponent = () => null;
 
 class AsyncComponent extends Component {
     static updateResolvedProps = resolvedProps => preState => ({
@@ -32,7 +32,7 @@ class AsyncComponent extends Component {
         this.mounted = false;
     }
     load() {
-        const pairs = toPairs(this.props.asyncProps || {})
+        let pairs = toPairs(this.props.asyncProps || {})
             .filter(entry => entry[1]);
         if (some(pairs, entry => !isFunction(entry[1]))) {
             this.setState({
@@ -42,8 +42,9 @@ class AsyncComponent extends Component {
             return;
         }
         const { batch } = this.props;
-        const promises = pairs.map(([k, v]) => new Promise(resolve => resolve([k, v()]))
-            .then(([k, p]) => {
+        pairs = pairs.map(([k, v]) => ([k, v()]));
+        if (some(pairs, pair => isPromise(pair[1]))) {
+            const promises = pairs.map(([k, p]) => {
                 if (isPromise(p)) {
                     return p.then((res) => {
                         if (!batch) {
@@ -59,34 +60,35 @@ class AsyncComponent extends Component {
                     });
                 }
                 return [k, p];
-            }));
-        Promise.all(promises).then((pairs) => {
-            if (this.mounted) {
-                this.setState({
-                    resolvedProps: fromPairs(pairs),
-                    error: null,
-                });
-            } else {
-                this.state.resolvedProps = fromPairs(pairs);
-                this.state.error = null;
-            }
-        }).catch((e) => {
-            if (this.mounted) {
-                this.setState({
-                    error: e,
-                });
-            } else {
-                this.state.error = e;
-            }
-        }).finally(() => {
-            if (this.mounted) {
-                this.setState({
-                    loading: false,
-                });
-            } else {
-                this.state.loading = false;
-            }
-        });
+            });
+            Promise.all(promises).then((pairs) => {
+                if (this.mounted) {
+                    this.setState({
+                        resolvedProps: fromPairs(pairs),
+                        error: null,
+                    });
+                } else {
+                    this.state.resolvedProps = fromPairs(pairs);
+                    this.state.error = null;
+                }
+            }).catch((e) => {
+                if (this.mounted) {
+                    this.setState({
+                        error: e,
+                    });
+                } else {
+                    this.state.error = e;
+                }
+            }).finally(() => {
+                if (this.mounted) {
+                    this.setState({
+                        loading: false,
+                    });
+                } else {
+                    this.state.loading = false;
+                }
+            });
+        }
     }
 
     render() {
@@ -97,22 +99,23 @@ class AsyncComponent extends Component {
             children, // eslint-disable-line react/prop-types
         } = this.props;
         const { error, loading, resolvedProps } = this.state;
+        const { children: ignored, ...restResolvedProps } = resolvedProps;
         if (loading) {
-            return <LoadingComponent {...this.props} {...resolvedProps} />;
+            return <LoadingComponent {...this.props} {...restResolvedProps} />;
         }
         if (error) {
-            return <ErrorComponent {...this.props} {...resolvedProps} error={error} />;
+            return <ErrorComponent {...this.props} {...restResolvedProps} error={error} />;
         }
         if (Comp) {
             return <Comp {...this.props} {...resolvedProps} />;
         }
         // noinspection JSUnresolvedFunction JSCheckFunctionSignatures
         const newChildren = React.Children
-            .map(children, child => React.cloneElement(child, resolvedProps));
+            .map(children, child => React.cloneElement(child, restResolvedProps));
         if (newChildren.length === 1) {
             return newChildren[0];
         } else if (newChildren.length > 1) {
-            return <div>{ newChildren }</div>;
+            return newChildren;
         }
         return null;
     }
