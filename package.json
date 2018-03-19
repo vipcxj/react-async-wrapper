@@ -11,12 +11,12 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/vipcxj/react-async.git"
+    "url": "https://github.com/vipcxj/react-async-wrapper.git"
   },
   "license": "MIT",
   "author": "Xiaojing Chen <vipcxj@126.com> (https://github.com/vipcxj)",
   "bugs": {
-    "url": "https://github.com/vipcxj/react-async/issues"
+    "url": "https://github.com/vipcxj/react-async-wrapper/issues"
   },
   "scripts": {
     "build": "node ./tools/build.js",
@@ -63,7 +63,6 @@
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "redbox-react": "^1.5.0",
     "rollup": "^0.57.1",
     "rollup-analyzer-plugin": "^1.1.1",
     "rollup-plugin-babel": "^4.0.0-beta.2",
