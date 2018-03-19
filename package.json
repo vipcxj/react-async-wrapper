@@ -2,8 +2,8 @@
   "name": "react-async",
   "version": "0.0.1",
   "description": "resolve async props for react component",
-  "main": "build/cjs/react-async.js",
-  "module": "build/es/react-async.js",
+  "main": "cjs/index.js",
+  "module": "es/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/vipcxj/react-async.git"
@@ -14,7 +14,11 @@
     "url": "https://github.com/vipcxj/react-async/issues"
   },
   "scripts": {
-    "build": "node ./tools/build.js"
+    "build": "node ./tools/build.js",
+    "prepublishOnly": "node ./tools/build.js",
+    "clean": "git clean -fdX .",
+    "lint": "eslint src",
+    "test": "jest"
   },
   "peerDependencies": {
     "react": ">=16",
@@ -57,6 +61,7 @@
     "rollup": "^0.57.1",
     "rollup-analyzer-plugin": "^1.1.1",
     "rollup-plugin-babel": "^4.0.0-beta.2",
+    "rollup-plugin-closure-compiler-js": "^1.0.6",
     "rollup-plugin-commonjs": "^9.1.0",
     "rollup-plugin-node-resolve": "^3.2.0",
     "rollup-plugin-peer-deps-external": "^2.1.0",

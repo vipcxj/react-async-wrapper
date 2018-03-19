@@ -20,7 +20,8 @@ module.exports = declare(({ assertVersion }) => {
     return {
         presets: [
             [ '@babel/env', {
-                modules: false
+                modules: false,
+                loose: true,
             } ],
             '@babel/react'
         ],

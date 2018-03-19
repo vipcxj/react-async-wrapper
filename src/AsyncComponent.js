@@ -6,11 +6,6 @@ import { some, toPairs, fromPairs, isFunction } from './utils';
 
 const DefaultLoadingComponent = () => null;
 let DefaultErrorComponent = () => null;
-try {
-    // noinspection JSValidateTypes
-    DefaultErrorComponent = require('redbox-react'); // eslint-disable-line import/no-extraneous-dependencies,global-require
-// eslint-disable-next-line no-empty
-} catch (e) {}
 
 class AsyncComponent extends Component {
     static updateResolvedProps = resolvedProps => preState => ({

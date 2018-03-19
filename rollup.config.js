@@ -5,14 +5,15 @@ import external from 'rollup-plugin-peer-deps-external';
 import replace from 'rollup-plugin-replace';
 import resolve from 'rollup-plugin-node-resolve';
 import uglify from 'rollup-plugin-uglify';
+// import closure from 'rollup-plugin-closure-compiler-js';
 import camelCase from 'lodash/camelcase';
 
 let file, sourcemap;
 if (process.env.NODE_ENV === 'production') {
-    file = `build/${process.env.BABEL_ENV}/${process.env.FILE_NAME}.min.js`;
+    file = `${process.env.BABEL_ENV}/${process.env.FILE_NAME}.min.${process.env.EXT}`;
     sourcemap = false;
 } else {
-    file = `build/${process.env.BABEL_ENV}/${process.env.FILE_NAME}.js`;
+    file = `${process.env.BABEL_ENV}/${process.env.FILE_NAME}.${process.env.EXT}`;
     sourcemap = true;
 }
 
@@ -30,19 +31,25 @@ const config = {
     },
     plugins: [
         external(),
-        babel({
-            exclude: "node_modules/**",
+        resolve({
+            jsnext: true,
         }),
-        resolve(),
         commonjs({
             include: 'node_modules/**',
+        }),
+        babel({
+            exclude: "node_modules/**",
         }),
         replace({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
         }),
-        analyzer(),
+        // closure(),
     ],
 };
+
+if (process.env.ANALYZER === true) {
+    config.plugins.push(analyzer());
+}
 
 if (process.env.NODE_ENV === 'production') {
     config.plugins.push(uglify());

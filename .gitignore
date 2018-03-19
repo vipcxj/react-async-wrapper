@@ -1,3 +1,8 @@
 .idea/
 node_modules
-build/
+cjs
+es
+es6
+umd
+/*.js
+!rollup.config.js

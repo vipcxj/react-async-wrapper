@@ -9,23 +9,51 @@ const exec = (command, extraEnv) => execSync(command, {
     env: Object.assign({}, process.env, extraEnv)
 });
 
-const name = 'react-async';
-['umd', 'cjs', 'es'].forEach((mode) => {
-    console.log(`\nBuilding ${mode}/${name}.js ...`);
-    exec('rollup -c', {
-        BABEL_ENV: mode,
-        NODE_ENV: 'development',
-        FILE_NAME: name,
-    });
-    console.log(`\nBuilding ${mode}/${name}.min.js ...`);
-    exec('rollup -c', {
-        BABEL_ENV: mode,
-        NODE_ENV: 'production',
-        FILE_NAME: name,
-    });
-    // noinspection JSUnresolvedFunction
-    const size = gzipSize.sync(
-        fs.readFileSync(`build/${mode}/${name}.min.js`)
-    );
-    console.log(`\ngzipped, the ${mode} build size is %s`, prettyBytes(size));
+const name = 'index';
+[
+    {
+        format: 'cjs',
+        ext: 'js',
+        tool: 'babel',
+    },
+    {
+        format: 'es',
+        ext: 'js',
+        tool: 'babel',
+    },
+    {
+        format: 'umd',
+        ext: 'js',
+        analyzer: true,
+        tool: 'rollup',
+    },
+].forEach(({ format, analyzer, ext, tool }) => {
+    if (tool === 'rollup') {
+        console.log(`\nBuilding development ${format} module ...`);
+        exec('rollup -c', {
+            BABEL_ENV: format,
+            NODE_ENV: 'development',
+            FILE_NAME: name,
+            EXT: ext,
+        });
+        console.log(`\nBuilding production ${format} module ...`);
+        exec('rollup -c', {
+            BABEL_ENV: format,
+            NODE_ENV: 'production',
+            FILE_NAME: name,
+            ANALYZER: analyzer,
+            EXT: ext,
+        });
+        // noinspection JSUnresolvedFunction
+        const size = gzipSize.sync(
+          fs.readFileSync(`${format}/${name}.min.${ext}`)
+        );
+        console.log(`\ngzipped, the ${format} build size is %s`, prettyBytes(size));
+    } else if (tool === 'babel') {
+        console.log(`\nBuilding ${format} module ...`);
+        exec(`babel src -d ${format} --ignore __tests__`, {
+            BABEL_ENV: format,
+            NODE_ENV: 'development',
+        });
+    }
 });
