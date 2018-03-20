@@ -76,6 +76,11 @@ class AsyncComponent extends Component {
                         return [k, res];
                     });
                 }
+                if (!batch) {
+                    this.setState(AsyncComponent.updateResolvedProps({
+                        [k]: p,
+                    }));
+                }
                 return [k, p];
             });
             Promise.all(promises).then((pairs) => {
