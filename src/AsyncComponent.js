@@ -7,6 +7,9 @@ import { some, toPairs, fromPairs, isFunction } from './utils';
 const DefaultLoadingComponent = () => null;
 const DefaultErrorComponent = () => null;
 
+const version = React.version;
+const majorVersion = version ? Number.parseInt(version.slice(0, version.indexOf('.'))) : 0;
+
 class AsyncComponent extends Component {
     static updateResolvedProps = resolvedProps => preState => ({
         resolvedProps: {
@@ -115,7 +118,7 @@ class AsyncComponent extends Component {
         if (newChildren.length === 1) {
             return newChildren[0];
         } else if (newChildren.length > 1) {
-            return newChildren;
+            return majorVersion >= 16 ? newChildren : <div> {newChildren} </div>;
         }
         return null;
     }
