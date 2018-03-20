@@ -16,14 +16,19 @@ class AsyncComponent extends Component {
             ...preState.resolvedProps,
             ...resolvedProps,
         },
+        progress: {
+            ...preState.progress,
+            ...fromPairs(Object.keys(resolvedProps).map(k => [k, 1])),
+        }
     });
-    constructor(...args) {
-        super(...args);
+    constructor(props, ...args) {
+        super(props, ...args);
         this.errorComponent = null;
         this.state = {
             error: null,
             loading: true,
             resolvedProps: {},
+            progress: fromPairs(Object.keys(props.asyncProps || {}).map(k => [k, 0])),
         };
     }
 
@@ -35,6 +40,13 @@ class AsyncComponent extends Component {
     componentWillUnmount() {
         this.mounted = false;
     }
+    updateProgress = propName => progress => this.setState({
+        progress: {
+            ...this.state.progress,
+            [propName]: progress,
+        },
+    });
+
     load() {
         let pairs = toPairs(this.props.asyncProps || {})
             .filter(entry => entry[1]);
@@ -46,7 +58,7 @@ class AsyncComponent extends Component {
             return;
         }
         const { batch } = this.props;
-        pairs = pairs.map(([k, v]) => ([k, v()]));
+        pairs = pairs.map(([k, v]) => ([k, v(this.updateProgress(k))]));
         if (some(pairs, pair => isPromise(pair[1]))) {
             const promises = pairs.map(([k, p]) => {
                 if (isPromise(p)) {
@@ -54,10 +66,11 @@ class AsyncComponent extends Component {
                         if (!batch) {
                             if (this.mounted) {
                                 this.setState(AsyncComponent.updateResolvedProps({
-                                    k: res,
+                                    [k]: res,
                                 }));
                             } else {
                                 this.state.resolvedProps[k] = res;
+                                this.state.progress[k] = 1;
                             }
                         }
                         return [k, res];
@@ -69,10 +82,12 @@ class AsyncComponent extends Component {
                 if (this.mounted) {
                     this.setState({
                         resolvedProps: fromPairs(pairs),
+                        progress: fromPairs(pairs.map(([k]) => [k, 1])),
                         error: null,
                     });
                 } else {
                     this.state.resolvedProps = fromPairs(pairs);
+                    this.state.progress = fromPairs(pairs.map(([k, v]) => [k, 1]));
                     this.state.error = null;
                 }
             }).catch((e) => {
@@ -102,16 +117,16 @@ class AsyncComponent extends Component {
             component: Comp,
             children, // eslint-disable-line react/prop-types
         } = this.props;
-        const { error, loading, resolvedProps } = this.state;
+        const { error, loading, resolvedProps, progress } = this.state;
         const { children: ignored, ...restResolvedProps } = resolvedProps;
         if (loading) {
-            return <LoadingComponent {...this.props} {...restResolvedProps} />;
+            return <LoadingComponent {...this.props} {...restResolvedProps} progress={progress} />;
         }
         if (error) {
-            return <ErrorComponent {...this.props} {...restResolvedProps} error={error} />;
+            return <ErrorComponent {...this.props} {...restResolvedProps} progress={progress} error={error} />;
         }
         if (Comp) {
-            return <Comp {...this.props} {...resolvedProps} />;
+            return <Comp {...this.props} {...resolvedProps} progress={progress} />;
         }
         // noinspection JSUnresolvedFunction JSCheckFunctionSignatures
         const newChildren = React.Children
@@ -134,6 +149,7 @@ const {
     element,
 } = PropTypes;
 
+// noinspection JSUnresolvedVariable
 AsyncComponent.propTypes = {
     batch: bool,
     // eslint-disable-next-line react/forbid-prop-types
