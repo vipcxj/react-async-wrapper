@@ -87,7 +87,7 @@ class AsyncComponent extends Component {
                     });
                 } else {
                     this.state.resolvedProps = fromPairs(pairs);
-                    this.state.progress = fromPairs(pairs.map(([k, v]) => [k, 1]));
+                    this.state.progress = fromPairs(pairs.map(([k]) => [k, 1]));
                     this.state.error = null;
                 }
             }).catch((e) => {
