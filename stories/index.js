@@ -46,34 +46,44 @@ const ProgressLoading = ({ a, b, c, d, progress }) => (
 );
 
 storiesOf('async component', module)
-.add('without wrapped', () => <Demo a={1} b={2} c={3} d={4}/>)
-.add('with basic wrapped', () => (
-  <AsyncComponent loadingComponent={SimpleLoading} asyncProps={{
-      a: delayReturn(1, 1000),
-      b: delayReturn(2, 1000),
-      c: delayReturn(3, 1000),
-      d: delayReturn(4, 1000),
-  }}>
-      <Demo/>
-  </AsyncComponent>
-))
-.add('with detail loading wrapped', () => (
-  <AsyncComponent loadingComponent={DetailLoading} batch={false} asyncProps={{
-      a: delayReturn(1, 4000),
-      b: delayReturn(2, 3000),
-      c: delayReturn(3, 2000),
-      d: delayReturn(4, 1000),
-  }}>
-      <Demo/>
-  </AsyncComponent>
-))
-.add('with progress loading wrapped', () => (
-  <AsyncComponent loadingComponent={ProgressLoading} batch={false} asyncProps={{
-      a: progressReturn(1, 4000),
-      b: progressReturn(2, 3000),
-      c: progressReturn(3, 2000),
-      d: progressReturn(4, 1000),
-  }}>
-      <Demo/>
-  </AsyncComponent>
-));
+  .add('without wrapped', () => <Demo a={1} b={2} c={3} d={4}/>)
+  .add('with sync wrapped', () => (
+    <AsyncComponent asyncProps={{
+        a: () => 1,
+        b: () => 2,
+        c: () => 3,
+        d: () => 4,
+    }}>
+        <Demo/>
+    </AsyncComponent>
+  ))
+  .add('with basic wrapped', () => (
+    <AsyncComponent loadingComponent={SimpleLoading} asyncProps={{
+        a: delayReturn(1, 1000),
+        b: delayReturn(2, 1000),
+        c: delayReturn(3, 1000),
+        d: delayReturn(4, 1000),
+    }}>
+        <Demo/>
+    </AsyncComponent>
+  ))
+  .add('with detail loading wrapped', () => (
+    <AsyncComponent loadingComponent={DetailLoading} batch={false} asyncProps={{
+        a: delayReturn(1, 4000),
+        b: delayReturn(2, 3000),
+        c: delayReturn(3, 2000),
+        d: delayReturn(4, 1000),
+    }}>
+        <Demo/>
+    </AsyncComponent>
+  ))
+  .add('with progress loading wrapped', () => (
+    <AsyncComponent loadingComponent={ProgressLoading} batch={false} asyncProps={{
+        a: progressReturn(1, 4000),
+        b: progressReturn(2, 3000),
+        c: progressReturn(3, 2000),
+        d: progressReturn(4, 1000),
+    }}>
+        <Demo/>
+    </AsyncComponent>
+  ));

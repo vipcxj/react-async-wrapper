@@ -46,7 +46,21 @@ class AsyncComponent extends Component {
             [propName]: progress,
         },
     });
-
+    loadSuccess = (pairs) => {
+        if (this.mounted) {
+            this.setState({
+                resolvedProps: fromPairs(pairs),
+                progress: fromPairs(pairs.map(([k]) => [k, 1])),
+                error: null,
+                loading: false,
+            });
+        } else {
+            this.state.resolvedProps = fromPairs(pairs);
+            this.state.progress = fromPairs(pairs.map(([k]) => [k, 1]));
+            this.state.error = null;
+            this.state.loading = false;
+        }
+    };
     load() {
         let pairs = toPairs(this.props.asyncProps || {})
             .filter(entry => entry[1]);
@@ -84,17 +98,7 @@ class AsyncComponent extends Component {
                 return [k, p];
             });
             Promise.all(promises).then((pairs) => {
-                if (this.mounted) {
-                    this.setState({
-                        resolvedProps: fromPairs(pairs),
-                        progress: fromPairs(pairs.map(([k]) => [k, 1])),
-                        error: null,
-                    });
-                } else {
-                    this.state.resolvedProps = fromPairs(pairs);
-                    this.state.progress = fromPairs(pairs.map(([k]) => [k, 1]));
-                    this.state.error = null;
-                }
+                this.loadSuccess(pairs);
             }).catch((e) => {
                 if (this.mounted) {
                     this.setState({
@@ -112,6 +116,8 @@ class AsyncComponent extends Component {
                     this.state.loading = false;
                 }
             });
+        } else {
+            this.loadSuccess(pairs);
         }
     }
 
