@@ -13,7 +13,7 @@ const Demo = ({a, b, c, d}) => (
     </ul>
 );
 
-const lazyReturn = (v, t) => async () => {
+const delayReturn = (v, t) => async () => {
     await sleep(t);
     return v;
 };
@@ -49,20 +49,20 @@ storiesOf('async component', module)
 .add('without wrapped', () => <Demo a={1} b={2} c={3} d={4}/>)
 .add('with basic wrapped', () => (
   <AsyncComponent loadingComponent={SimpleLoading} asyncProps={{
-      a: lazyReturn(1, 1000),
-      b: lazyReturn(2, 1000),
-      c: lazyReturn(3, 1000),
-      d: lazyReturn(4, 1000),
+      a: delayReturn(1, 1000),
+      b: delayReturn(2, 1000),
+      c: delayReturn(3, 1000),
+      d: delayReturn(4, 1000),
   }}>
       <Demo/>
   </AsyncComponent>
 ))
 .add('with detail loading wrapped', () => (
   <AsyncComponent loadingComponent={DetailLoading} batch={false} asyncProps={{
-      a: lazyReturn(1, 4000),
-      b: lazyReturn(2, 3000),
-      c: lazyReturn(3, 2000),
-      d: lazyReturn(4, 1000),
+      a: delayReturn(1, 4000),
+      b: delayReturn(2, 3000),
+      c: delayReturn(3, 2000),
+      d: delayReturn(4, 1000),
   }}>
       <Demo/>
   </AsyncComponent>
