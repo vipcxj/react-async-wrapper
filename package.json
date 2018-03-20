@@ -23,7 +23,9 @@
     "prepublishOnly": "node ./tools/build.js",
     "clean": "git clean -fdX .",
     "lint": "eslint src",
-    "test": "jest"
+    "test": "jest",
+    "precommit": "npm run lint",
+    "storybook": "start-storybook -p 6006"
   },
   "peerDependencies": {
     "react": ">=16",
