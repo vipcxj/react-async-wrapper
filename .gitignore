@@ -4,5 +4,3 @@ cjs
 es
 es6
 umd
-/*.js
-!rollup.config.js
