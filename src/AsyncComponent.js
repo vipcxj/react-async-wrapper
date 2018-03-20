@@ -31,7 +31,8 @@ class AsyncComponent extends Component {
         this.mounted = true;
         this.load();
     }
-    componentWillUpdate() {
+
+    componentWillUnmount() {
         this.mounted = false;
     }
     load() {
