@@ -65,10 +65,12 @@ class AsyncComponent extends Component {
         let pairs = toPairs(this.props.asyncProps || {})
             .filter(entry => entry[1]);
         if (some(pairs, entry => !isFunction(entry[1]))) {
+            const error = new Error('The prop of asyncProps must be a function.');
             this.setState({
-                error: new Error('The prop of asyncProps must be a function.'),
+                error,
                 loading: false,
             });
+            this.props.onError && this.props.onError(error);
             return;
         }
         const { batch } = this.props;
@@ -107,6 +109,7 @@ class AsyncComponent extends Component {
                 } else {
                     this.state.error = e;
                 }
+                this.props.onError && this.props.onError(e);
             }).finally(() => {
                 if (this.mounted) {
                     this.setState({
@@ -169,6 +172,7 @@ AsyncComponent.propTypes = {
     children: oneOfType([element, arrayOf(element)]),
     errorComponent: func,
     loadingComponent: func,
+    onError: func,
 };
 
 AsyncComponent.defaultProps = {
@@ -177,6 +181,7 @@ AsyncComponent.defaultProps = {
     children: null,
     errorComponent: DefaultErrorComponent,
     loadingComponent: DefaultLoadingComponent,
+    onError: () => null,
 };
 
 export default AsyncComponent;
