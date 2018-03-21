@@ -6,6 +6,7 @@ import { some, toPairs, fromPairs, isFunction } from './utils';
 
 const DefaultLoadingComponent = () => null;
 const DefaultErrorComponent = () => null;
+const SymbolJob = Symbol('job');
 
 const version = React.version;
 const majorVersion = version ? Number.parseInt(version.slice(0, version.indexOf('.'))) : 0;
@@ -62,12 +63,12 @@ class AsyncComponent extends Component {
         }
     };
     load() {
-        const { asyncProps, onError, delay } = this.props;
+        const { asyncJobs, asyncProps, onError, delay } = this.props;
         try {
-            let pairs = toPairs(asyncProps || {})
+            let pairs = [...(asyncJobs || []).map(job => [SymbolJob, job]), ...toPairs(asyncProps || {})]
               .filter(entry => entry[1]);
             if (some(pairs, entry => !isFunction(entry[1]))) {
-                const error = new Error('The prop of asyncProps must be a function.');
+                const error = new Error('The async job or async prop must be a function.');
                 this.setState({
                     error,
                     loading: false,
@@ -77,15 +78,14 @@ class AsyncComponent extends Component {
             }
             const { batch } = this.props;
             pairs = pairs.map(([k, v]) => ([k, v(this.updateProgress(k))]));
-            const pairNum = pairs.length;
             if (delay > 0) {
-                pairs.push(['delay', new Promise(resolve => setTimeout(resolve, delay))])
+                pairs.push([SymbolJob, new Promise(resolve => setTimeout(resolve, delay))])
             }
             if (some(pairs, pair => isPromise(pair[1]))) {
-                const promises = pairs.map(([k, p], index) => {
+                const promises = pairs.map(([k, p]) => {
                     if (isPromise(p)) {
                         return p.then((res) => {
-                            if (!batch && index < pairNum) {
+                            if (!batch && typeof k !== 'symbol') {
                                 if (this.mounted) {
                                     this.setState(AsyncComponent.updateResolvedProps({
                                         [k]: res,
@@ -98,7 +98,7 @@ class AsyncComponent extends Component {
                             return [k, res];
                         });
                     }
-                    if (!batch) {
+                    if (!batch && typeof k !== 'symbol') {
                         this.setState(AsyncComponent.updateResolvedProps({
                             [k]: p,
                         }));
@@ -106,7 +106,7 @@ class AsyncComponent extends Component {
                     return [k, p];
                 });
                 Promise.all(promises).then((pairs) => {
-                    this.loadSuccess(pairs.length > pairNum ? pairs.slice(0, pairNum) : pairs);
+                    this.loadSuccess(pairs.filter(([k]) => typeof k !== 'symbol'));
                 }).catch((e) => {
                     if (this.mounted) {
                         this.setState({
@@ -126,7 +126,7 @@ class AsyncComponent extends Component {
                     }
                 });
             } else {
-                this.loadSuccess(pairs.length > pairNum ? pairs.slice(0, pairNum) : pairs);
+                this.loadSuccess(pairs.filter(([k]) => typeof k !== 'symbol'));
             }
         } catch (error) {
             onError && onError(error);
@@ -166,6 +166,7 @@ class AsyncComponent extends Component {
 const {
     bool,
     number,
+    array,
     object,
     func,
     oneOfType,
@@ -175,6 +176,7 @@ const {
 
 AsyncComponent.propTypes = {
     batch: bool,
+    asyncJobs: array,
     asyncProps: object,
     component: func,
     children: oneOfType([element, arrayOf(element)]),
@@ -186,6 +188,7 @@ AsyncComponent.propTypes = {
 
 AsyncComponent.defaultProps = {
     batch: false,
+    asyncJobs: [],
     asyncProps: {},
     component: null,
     children: null,
