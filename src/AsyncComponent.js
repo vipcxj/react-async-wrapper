@@ -62,65 +62,74 @@ class AsyncComponent extends Component {
         }
     };
     load() {
-        let pairs = toPairs(this.props.asyncProps || {})
-            .filter(entry => entry[1]);
-        if (some(pairs, entry => !isFunction(entry[1]))) {
-            const error = new Error('The prop of asyncProps must be a function.');
-            this.setState({
-                error,
-                loading: false,
-            });
-            this.props.onError && this.props.onError(error);
-            return;
-        }
-        const { batch } = this.props;
-        pairs = pairs.map(([k, v]) => ([k, v(this.updateProgress(k))]));
-        if (some(pairs, pair => isPromise(pair[1]))) {
-            const promises = pairs.map(([k, p]) => {
-                if (isPromise(p)) {
-                    return p.then((res) => {
-                        if (!batch) {
-                            if (this.mounted) {
-                                this.setState(AsyncComponent.updateResolvedProps({
-                                    [k]: res,
-                                }));
-                            } else {
-                                this.state.resolvedProps[k] = res;
-                                this.state.progress[k] = 1;
+        const { asyncProps, onError, delay } = this.props;
+        try {
+            let pairs = toPairs(asyncProps || {})
+              .filter(entry => entry[1]);
+            if (some(pairs, entry => !isFunction(entry[1]))) {
+                const error = new Error('The prop of asyncProps must be a function.');
+                this.setState({
+                    error,
+                    loading: false,
+                });
+                onError && onError(error);
+                return;
+            }
+            const { batch } = this.props;
+            pairs = pairs.map(([k, v]) => ([k, v(this.updateProgress(k))]));
+            const pairNum = pairs.length;
+            if (delay > 0) {
+                pairs.push(['delay', new Promise(resolve => setTimeout(resolve, delay))])
+            }
+            if (some(pairs, pair => isPromise(pair[1]))) {
+                const promises = pairs.map(([k, p], index) => {
+                    if (isPromise(p)) {
+                        return p.then((res) => {
+                            if (!batch && index < pairNum) {
+                                if (this.mounted) {
+                                    this.setState(AsyncComponent.updateResolvedProps({
+                                        [k]: res,
+                                    }));
+                                } else {
+                                    this.state.resolvedProps[k] = res;
+                                    this.state.progress[k] = 1;
+                                }
                             }
-                        }
-                        return [k, res];
-                    });
-                }
-                if (!batch) {
-                    this.setState(AsyncComponent.updateResolvedProps({
-                        [k]: p,
-                    }));
-                }
-                return [k, p];
-            });
-            Promise.all(promises).then((pairs) => {
-                this.loadSuccess(pairs);
-            }).catch((e) => {
-                if (this.mounted) {
-                    this.setState({
-                        error: e,
-                    });
-                } else {
-                    this.state.error = e;
-                }
-                this.props.onError && this.props.onError(e);
-            }).finally(() => {
-                if (this.mounted) {
-                    this.setState({
-                        loading: false,
-                    });
-                } else {
-                    this.state.loading = false;
-                }
-            });
-        } else {
-            this.loadSuccess(pairs);
+                            return [k, res];
+                        });
+                    }
+                    if (!batch) {
+                        this.setState(AsyncComponent.updateResolvedProps({
+                            [k]: p,
+                        }));
+                    }
+                    return [k, p];
+                });
+                Promise.all(promises).then((pairs) => {
+                    this.loadSuccess(pairs.length > pairNum ? pairs.slice(0, pairNum) : pairs);
+                }).catch((e) => {
+                    if (this.mounted) {
+                        this.setState({
+                            error: e,
+                        });
+                    } else {
+                        this.state.error = e;
+                    }
+                    onError && onError(e);
+                }).finally(() => {
+                    if (this.mounted) {
+                        this.setState({
+                            loading: false,
+                        });
+                    } else {
+                        this.state.loading = false;
+                    }
+                });
+            } else {
+                this.loadSuccess(pairs.length > pairNum ? pairs.slice(0, pairNum) : pairs);
+            }
+        } catch (error) {
+            onError && onError(error);
         }
     }
 
@@ -156,6 +165,7 @@ class AsyncComponent extends Component {
 
 const {
     bool,
+    number,
     object,
     func,
     oneOfType,
@@ -163,25 +173,26 @@ const {
     element,
 } = PropTypes;
 
-// noinspection JSUnresolvedVariable
 AsyncComponent.propTypes = {
     batch: bool,
-    // eslint-disable-next-line react/forbid-prop-types
-    asyncProps: object.isRequired,
+    asyncProps: object,
     component: func,
     children: oneOfType([element, arrayOf(element)]),
     errorComponent: func,
     loadingComponent: func,
     onError: func,
+    delay: number,
 };
 
 AsyncComponent.defaultProps = {
     batch: false,
+    asyncProps: {},
     component: null,
     children: null,
     errorComponent: DefaultErrorComponent,
     loadingComponent: DefaultLoadingComponent,
     onError: () => null,
+    delay: 0,
 };
 
 export default AsyncComponent;

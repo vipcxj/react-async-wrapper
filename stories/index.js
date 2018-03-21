@@ -45,9 +45,10 @@ const ProgressLoading = ({ a, b, c, d, progress }) => (
     </ul>
 );
 
+// noinspection JSUnresolvedFunction
 storiesOf('async component', module)
   .add('without wrapped', () => <Demo a={1} b={2} c={3} d={4}/>)
-  .add('with sync wrapped', () => (
+  .add('sync wrapped', () => (
     <AsyncComponent asyncProps={{
         a: () => 1,
         b: () => 2,
@@ -57,7 +58,12 @@ storiesOf('async component', module)
         <Demo/>
     </AsyncComponent>
   ))
-  .add('with basic wrapped', () => (
+  .add('force delay', () => (
+    <AsyncComponent loadingComponent={SimpleLoading} delay={3000}>
+        <Demo a={1} b={2} c={3} d={4}/>
+    </AsyncComponent>
+  ))
+  .add('basic wrapped', () => (
     <AsyncComponent loadingComponent={SimpleLoading} asyncProps={{
         a: delayReturn(1, 1000),
         b: delayReturn(2, 1000),
@@ -67,7 +73,7 @@ storiesOf('async component', module)
         <Demo/>
     </AsyncComponent>
   ))
-  .add('with detail loading wrapped', () => (
+  .add('detail loading wrapped', () => (
     <AsyncComponent loadingComponent={DetailLoading} batch={false} asyncProps={{
         a: delayReturn(1, 4000),
         b: delayReturn(2, 3000),
@@ -77,7 +83,7 @@ storiesOf('async component', module)
         <Demo/>
     </AsyncComponent>
   ))
-  .add('with progress loading wrapped', () => (
+  .add('progress loading wrapped', () => (
     <AsyncComponent loadingComponent={ProgressLoading} batch={false} asyncProps={{
         a: progressReturn(1, 4000),
         b: progressReturn(2, 3000),
