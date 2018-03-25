@@ -67,6 +67,55 @@ storiesOf('async component', module)
       <Demo />
     </AsyncComponent>
   ))
+  .add('without loading', () => (
+    <AsyncComponent asyncProps={{
+      a: delayReturn(1, 1000),
+      b: delayReturn(2, 1100),
+      c: delayReturn(3, 1200),
+      d: delayReturn(4, 1200),
+    }}
+    >
+      <Demo />
+    </AsyncComponent>
+  ))
+  .add('wo loading/with default/batch', () => (
+    <AsyncComponent
+      asyncProps={{
+        a: delayReturn(1, 500),
+        b: delayReturn(2, 1000),
+        c: delayReturn(3, 2000),
+        d: delayReturn(4, 1500),
+      }}
+      asyncPropOpts={{
+        a: { defaultProp: 'Loading' },
+        b: { defaultProp: 'Loading' },
+        c: { defaultProp: 'Loading' },
+        d: { defaultProp: 'Loading' },
+      }}
+      batch
+    >
+      <Demo />
+    </AsyncComponent>
+  ))
+  .add('wo loading/with default/no batch', () => (
+    <AsyncComponent
+      asyncProps={{
+        a: delayReturn(1, 500),
+        b: delayReturn(2, 1000),
+        c: delayReturn(3, 2000),
+        d: delayReturn(4, 1500),
+      }}
+      asyncPropOpts={{
+        a: { defaultProp: 'Loading' },
+        b: { defaultProp: 'Loading' },
+        c: { defaultProp: 'Loading' },
+        d: { defaultProp: 'Loading' },
+      }}
+      batch={false}
+    >
+      <Demo />
+    </AsyncComponent>
+  ))
   .add('force delay', () => (
     <AsyncComponent loadingComponent={SimpleLoading} delay={3000}>
       <Demo a={1} b={2} c={3} d={4} />
@@ -88,7 +137,6 @@ storiesOf('async component', module)
   .add('detail loading wrapped', () => (
     <AsyncComponent
       loadingComponent={DetailLoading}
-      batch={false}
       asyncProps={{
         a: delayReturn(1, 4000),
         b: delayReturn(2, 3000),
@@ -102,7 +150,6 @@ storiesOf('async component', module)
   .add('progress loading wrapped', () => (
     <AsyncComponent
       loadingComponent={ProgressLoading}
-      batch={false}
       asyncProps={{
         a: progressReturn(1, 4000),
         b: progressReturn(2, 3000),
