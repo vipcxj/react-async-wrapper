@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isPromise from 'is-promise';
-import { some, toPairs, fromPairs, isFunction } from './utils';
+import { some, toPairs, fromPairs, isFunction, mapValues } from './utils';
 
 const DefaultLoadingComponent = () => null;
 const DefaultErrorComponent = () => null;
@@ -146,21 +146,28 @@ class AsyncComponent extends Component {
       const {
         errorComponent: ErrorComponent,
         loadingComponent: LoadingComponent,
+        asyncPropOpts,
+        asyncPropsMapper,
         component: Comp,
         children, // eslint-disable-line react/prop-types
       } = this.props;
       const {
         error, loading, resolvedProps, progress,
       } = this.state;
-      const { children: ignored, ...restResolvedProps } = resolvedProps;
-      if (loading) {
+      const wrappedProps = asyncPropsMapper(Object.assign(
+        {},
+        mapValues(asyncPropOpts, opt => opt.defaultProp, opt => opt && opt.defaultProp),
+        resolvedProps,
+      ));
+      const { children: ignored, ...restResolvedProps } = wrappedProps;
+      if (loading && LoadingComponent !== DefaultLoadingComponent) {
         return <LoadingComponent {...this.props} {...restResolvedProps} progress={progress} />;
       }
       if (error) {
         return <ErrorComponent {...this.props} {...restResolvedProps} progress={progress} error={error} />;
       }
       if (Comp) {
-        return <Comp {...this.props} {...resolvedProps} progress={progress} />;
+        return <Comp {...wrappedProps} progress={progress} />;
       }
       // noinspection JSUnresolvedFunction JSCheckFunctionSignatures
       const newChildren = React.Children
@@ -175,6 +182,7 @@ class AsyncComponent extends Component {
 }
 
 const {
+  any,
   bool,
   number,
   objectOf,
@@ -182,12 +190,17 @@ const {
   oneOfType,
   arrayOf,
   element,
+  shape,
 } = PropTypes;
 
 AsyncComponent.propTypes = {
   batch: bool,
   asyncJobs: arrayOf(func),
   asyncProps: objectOf(func),
+  asyncPropOpts: objectOf(shape({
+    defaultProp: any,
+  })),
+  asyncPropsMapper: func,
   component: func,
   children: oneOfType([element, arrayOf(element)]),
   errorComponent: func,
@@ -200,6 +213,8 @@ AsyncComponent.defaultProps = {
   batch: false,
   asyncJobs: [],
   asyncProps: {},
+  asyncPropOpts: {},
+  asyncPropsMapper: props => props,
   component: null,
   children: null,
   errorComponent: DefaultErrorComponent,
