@@ -33,13 +33,6 @@ class AsyncComponent extends Component {
       progress: fromPairs(Object.keys(props.asyncProps || {}).map(k => [k, 0])),
     };
   }
-  setStateSafe = (newState) => {
-    if (this.mounted) {
-      this.setState(newState);
-    } else {
-      Object.assign(this.state, newState);
-    }
-  };
   componentDidMount() {
     this.mounted = true;
     this.load();
@@ -48,12 +41,20 @@ class AsyncComponent extends Component {
   componentWillUnmount() {
     this.mounted = false;
   }
-  updateProgress = propName => progress => this.setState({
+  setStateSafe = (newState) => {
+    if (this.mounted) {
+      this.setState(newState);
+    } else {
+      Object.assign(this.state, newState);
+    }
+  };
+  // noinspection JSCheckFunctionSignatures
+  updateProgress = propName => progress => this.setState(preState => ({
     progress: {
-      ...this.state.progress,
+      ...preState.progress,
       [propName]: progress,
     },
-  });
+  }));
   loadSuccess = (pairs) => {
     let compPair = null;
     for (let i = 0; i < pairs.length; ++i) {
@@ -69,7 +70,7 @@ class AsyncComponent extends Component {
       loading: false,
     };
     if (compPair) {
-      newState.component = compPair[1];
+      [, newState.component] = compPair;
     }
     this.setStateSafe(newState);
   };
@@ -85,6 +86,7 @@ class AsyncComponent extends Component {
       ].filter(entry => entry[1]);
       if (some(pairs, entry => !isFunction(entry[1]))) {
         const error = new Error('The async job or async prop must be a function.');
+        // noinspection JSCheckFunctionSignatures
         this.setState({
           error,
           loading: false,
@@ -127,6 +129,7 @@ class AsyncComponent extends Component {
             }));
           }
           if (!batch && k === SymbolComp) {
+            // noinspection JSCheckFunctionSignatures
             this.setState({
               component: p,
             });
@@ -137,6 +140,7 @@ class AsyncComponent extends Component {
           this.loadSuccess(pairs.filter(([k]) => typeof k !== 'symbol'));
         }).catch((e) => {
           if (this.mounted) {
+            // noinspection JSCheckFunctionSignatures
             this.setState({
               error: e,
             });
@@ -148,6 +152,7 @@ class AsyncComponent extends Component {
           }
         }).finally(() => {
           if (this.mounted) {
+            // noinspection JSCheckFunctionSignatures
             this.setState({
               loading: false,
             });
@@ -171,6 +176,7 @@ class AsyncComponent extends Component {
       loadingComponent: LoadingComponent,
       asyncPropOpts,
       asyncPropsMapper,
+      syncProps,
       asyncComponent,
       children, // eslint-disable-line react/prop-types
     } = this.props;
@@ -192,17 +198,20 @@ class AsyncComponent extends Component {
     }
     if (asyncComponent) {
       if (this.state.component) {
-        Comp = this.state.component
+        Comp = this.state.component;
       } else {
         return null;
       }
     }
     if (Comp) {
-      return <Comp {...wrappedProps} progress={progress} />;
+      return <Comp {...syncProps} {...wrappedProps} progress={progress} />;
     }
     // noinspection JSUnresolvedFunction JSCheckFunctionSignatures
     const newChildren = React.Children
-      .map(children, child => React.cloneElement(child, restResolvedProps));
+      .map(children, child => React.cloneElement(child, {
+        ...syncProps,
+        ...restResolvedProps,
+      }));
     if (!newChildren) {
       return null;
     }
@@ -235,6 +244,7 @@ AsyncComponent.propTypes = {
     defaultProp: any,
   })),
   asyncPropsMapper: func,
+  syncProps: objectOf(any),
   component: func,
   asyncComponent: func,
   children: oneOfType([element, arrayOf(element)]),
@@ -250,6 +260,7 @@ AsyncComponent.defaultProps = {
   asyncProps: {},
   asyncPropOpts: {},
   asyncPropsMapper: props => props,
+  syncProps: {},
   component: null,
   asyncComponent: null,
   children: null,
