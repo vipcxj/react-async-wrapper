@@ -1,4 +1,4 @@
 import AsyncComponent from './AsyncComponent';
+import makeAsync from './makeAsync';
 
-// eslint-disable-next-line import/prefer-default-export
-export { AsyncComponent };
+export { AsyncComponent, makeAsync };

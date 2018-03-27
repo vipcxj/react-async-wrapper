@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import isPromise from 'is-promise';
 import { some, toPairs, fromPairs, isFunction, mapValues } from './utils';
 
-const DefaultLoadingComponent = () => null;
-const DefaultErrorComponent = () => null;
+const isStateless = Component => !Component.prototype.render;
+export const DefaultLoadingComponent = () => null;
+export const DefaultErrorComponent = () => null;
 const SymbolComp = Symbol('component');
 const SymbolJob = Symbol('job');
 
@@ -176,19 +177,26 @@ class AsyncComponent extends Component {
       loadingComponent: LoadingComponent,
       asyncPropOpts,
       asyncPropsMapper,
-      syncProps,
       asyncComponent,
       children, // eslint-disable-line react/prop-types
     } = this.props;
+    let { syncProps } = this.props;
     let { component: Comp } = this.props;
     const {
       error, loading, resolvedProps, progress,
     } = this.state;
-    const wrappedProps = asyncPropsMapper(Object.assign(
+    let wrappedProps = asyncPropsMapper(Object.assign(
       {},
       mapValues(asyncPropOpts, opt => opt.defaultProp, opt => opt && opt.defaultProp),
       resolvedProps,
     ));
+    let ref;
+    if ({}.hasOwnProperty.apply(syncProps, 'ref')) {
+      ({ ref, ...syncProps } = syncProps);
+    }
+    if ({}.hasOwnProperty.apply(wrappedProps, 'ref')) {
+      ({ ref, ...wrappedProps } = wrappedProps);
+    }
     const { children: ignored, ...restResolvedProps } = wrappedProps;
     if (loading && LoadingComponent !== DefaultLoadingComponent) {
       return <LoadingComponent {...this.props} {...restResolvedProps} progress={progress} />;
@@ -204,7 +212,9 @@ class AsyncComponent extends Component {
       }
     }
     if (Comp) {
-      return <Comp {...(syncProps || {})} {...wrappedProps} progress={progress} />;
+      return (!isStateless(Comp) && ref)
+        ? <Comp {...(syncProps || {})} {...wrappedProps} ref={ref} progress={progress} />
+        : <Comp {...(syncProps || {})} {...wrappedProps} progress={progress} />;
     }
     // noinspection JSUnresolvedFunction JSCheckFunctionSignatures
     const newChildren = React.Children
