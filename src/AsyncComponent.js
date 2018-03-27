@@ -204,12 +204,12 @@ class AsyncComponent extends Component {
       }
     }
     if (Comp) {
-      return <Comp {...syncProps} {...wrappedProps} progress={progress} />;
+      return <Comp {...(syncProps || {})} {...wrappedProps} progress={progress} />;
     }
     // noinspection JSUnresolvedFunction JSCheckFunctionSignatures
     const newChildren = React.Children
       .map(children, child => React.cloneElement(child, {
-        ...syncProps,
+        ...(syncProps || {}),
         ...restResolvedProps,
       }));
     if (!newChildren) {
