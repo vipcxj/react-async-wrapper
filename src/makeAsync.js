@@ -40,7 +40,7 @@ export default opts => (Comp) => {
     }
     return <AsyncComponent {...wrapperProps} />;
   };
-  C.displayName = `withRouter(${!isPromise(Comp) ? (Comp.displayName || Comp.name) : 'Unknown'})`;
+  C.displayName = `makeAsync(${!isPromise(Comp) ? (Comp.displayName || Comp.name) : 'Unknown'})`;
   C.propTypes = {
     // eslint-disable-next-line
     wrappedComponentRef: PropTypes.func,
