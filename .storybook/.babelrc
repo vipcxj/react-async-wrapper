@@ -1,3 +1,4 @@
 {
-  "presets": ["./tools/babel-preset"]
+  "presets": ["./tools/babel-preset"],
+  "plugins": ["@babel/syntax-dynamic-import"]
 }

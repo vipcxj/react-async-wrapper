@@ -2,7 +2,7 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
 
-import { AsyncComponent } from '../src';
+import { AsyncComponent, makeAsync } from '../src';
 
 const sleep = async t => new Promise(resolve => setTimeout(resolve, t));
 const Demo = ({
@@ -160,3 +160,28 @@ storiesOf('async component', module)
       <Demo />
     </AsyncComponent>
   ));
+
+// noinspection JSUnresolvedFunction
+storiesOf('make async', module)
+  .add('basic usage', () => {
+    const Wrapped = makeAsync({
+      asyncProps: {
+        a: delayReturn(1, 1000),
+        b: delayReturn(2, 3000),
+        c: delayReturn(3, 2000),
+        d: delayReturn(4, 4000),
+      },
+    })(Demo);
+    return <Wrapped />;
+  })
+  .add('async component', () => {
+    const Wrapped = makeAsync({
+      asyncProps: {
+        a: delayReturn(1, 1000),
+        b: delayReturn(2, 3000),
+        c: delayReturn(3, 2000),
+        d: delayReturn(4, 4000),
+      },
+    })(import('./AsyncDemo').then(m => m.default));
+    return <Wrapped />;
+  });
