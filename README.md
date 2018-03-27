@@ -61,9 +61,11 @@ export const AsyncDemo = () => {
 
 ```
 
-## API
+## Component
 
-### Properties
+### AsyncComponent
+
+#### Properties
 - *batch* - **bool** `false`
 
   If true, only when all async props are resolved, the wrapped component is rendered again. 
@@ -121,4 +123,40 @@ export const AsyncDemo = () => {
 - *delay* - **number** : `0`
 
   A number greater than 0 will force the wrapped component rendering with a delay.
-  
+
+## API
+
+### makeAsync
+
+#### signature
+
+`(opts: object) => (component: Promise<Component> | Component) => Component`
+
+#### params
+
+##### opts
+
+The options. Same as properties of `AsyncComponent`.
+
+- *batch* - **bool** `false`
+
+- *asyncJobs* - **[ func() : (Promise\<any\> | any) ]** `[]`
+
+- *asyncProps* - **{ property: func( progressUpdater: ( func(number):void ) ) : (Promise\<any> | any) }** `{}`
+
+- *asyncPropOpts* - **{ property: { defaultProp: any } }** `{}`
+
+- *asyncPropsMapper* - **func( props: { property: any } ):{ property: any }** `props => props`
+
+- *errorComponent* - **Component** `() => null`
+
+- *loadingComponent* - **Component** `() => null`
+
+- *onError* - **func( error: any ) : void** `() => null`
+
+- *delay* - **number** : `0`
+
+##### component
+
+A react component or a Promise return a react component. The wrapped component.
+
