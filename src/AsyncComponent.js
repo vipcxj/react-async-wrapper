@@ -203,6 +203,9 @@ class AsyncComponent extends Component {
     // noinspection JSUnresolvedFunction JSCheckFunctionSignatures
     const newChildren = React.Children
       .map(children, child => React.cloneElement(child, restResolvedProps));
+    if (!newChildren) {
+      return null;
+    }
     if (newChildren.length === 1) {
       return newChildren[0];
     } else if (newChildren.length > 1) {
