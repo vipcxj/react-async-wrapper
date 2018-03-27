@@ -90,6 +90,10 @@ export const AsyncDemo = () => {
 - *asyncPropsMapper* - **func( props: { property: any } ):{ property: any }** `props => props`
 
   Accept the resolved async props, and return the props provide to the wrapped component.
+
+- *syncProps* - **{ property: any }** `{}`
+
+  The sync props. This is useful when providing component or asyncComponent prop instead of children node as wrapped component.
   
 - *component* - **Component** `null`
 
