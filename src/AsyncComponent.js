@@ -191,10 +191,10 @@ class AsyncComponent extends Component {
       resolvedProps,
     ));
     let ref;
-    if ({}.hasOwnProperty.apply(syncProps, 'ref')) {
+    if ({}.hasOwnProperty.call(syncProps, 'ref')) {
       ({ ref, ...syncProps } = syncProps);
     }
-    if ({}.hasOwnProperty.apply(wrappedProps, 'ref')) {
+    if ({}.hasOwnProperty.call(wrappedProps, 'ref')) {
       ({ ref, ...wrappedProps } = wrappedProps);
     }
     const { children: ignored, ...restResolvedProps } = wrappedProps;
