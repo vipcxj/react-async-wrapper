@@ -48,6 +48,7 @@
     "@babel/preset-env": "^7.0.0-beta.42",
     "@babel/preset-react": "^7.0.0-beta.42",
     "@storybook/addon-info": "^3.3.15",
+    "@storybook/addon-storysource": "^3.4.0-alpha.8",
     "@storybook/react": "^3.3.15",
     "@storybook/storybook-deployer": "^2.3.0",
     "@types/lodash": "^4.14.105",
@@ -64,11 +65,13 @@
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0",
     "gzip-size": "^4.1.0",
+    "highlight.js": "^9.12.0",
     "lodash": "^4.17.5",
     "pretty-bytes": "^4.0.2",
     "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-markdown": "^3.3.0",
     "rollup": "^0.57.1",
     "rollup-analyzer-plugin": "^1.1.1",
     "rollup-plugin-babel": "^4.0.0-beta.2",
@@ -77,7 +80,8 @@
     "rollup-plugin-node-resolve": "^3.2.0",
     "rollup-plugin-peer-deps-external": "^2.1.0",
     "rollup-plugin-replace": "^2.0.0",
-    "rollup-plugin-uglify": "^3.0.0"
+    "rollup-plugin-uglify": "^3.0.0",
+    "classnames": "latest"
   },
   "keywords": [
     "react",

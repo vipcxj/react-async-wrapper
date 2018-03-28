@@ -82,7 +82,7 @@ export const AsyncDemo = () => {
   The async jobs. 
   Compared to async props, they will not provide the props to the wrapped component, 
   but they should be done before the wrapped component finally render.
-  The word 'finally' means the wrapped component will be updated sevial time if 'batch' set to false.
+  The word 'finally' means the wrapped component will be updated several time if 'batch' set to false.
   
 - *asyncProps* - **{ property: func( progressUpdater: ( func(number):void ) ) : (Promise\<any> | any) }** `{}`
 

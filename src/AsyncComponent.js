@@ -246,20 +246,49 @@ const {
 } = PropTypes;
 
 AsyncComponent.propTypes = {
+  /** If true, only when all async props are resolved, the wrapped component is rendered again.
+   Otherwise, the wrapped component will be updated when any async prop is resolved. */
   batch: bool,
+  /** The async jobs.
+   Compared to async props, they will not provide the props to the wrapped component,
+   but they should be done before the wrapped component finally render.
+   The word 'finally' means the wrapped component will be updated several time if 'batch' set to false. */
   asyncJobs: arrayOf(func),
+  /** All async props should be declared here.They should be functions.
+   If the function return a promise, it will be a real async prop,
+   otherwise it is still a sync prop.
+   The es6 async function is supported. In fact it is just a function return promise.
+   The async component will provide every function with a method to update the progress
+   which is a number range from 0 to 1. */
   asyncProps: objectOf(func),
+  /** The option of the async props. At this moment, only 'defaultProp' is supported. */
   asyncPropOpts: objectOf(shape({
     defaultProp: any,
   })),
+  /** Accept the resolved async props, and return the props provide to the wrapped component. */
   asyncPropsMapper: func,
+  /** The sync props.
+   *  This is useful when providing component or asyncComponent prop
+   *  instead of children node as wrapped component. */
   syncProps: objectOf(any),
+  /** If specialized, the async wrapper will use this as the wrapped component
+   *  instead of the children components. */
   component: func,
+  /** If specialized, the async wrapper will use this as the wrapped component
+   *  when resolved instead of component prop and the children components. */
   asyncComponent: func,
   children: oneOfType([element, arrayOf(element)]),
+  /** This component will be used to show the error. */
   errorComponent: func,
+  /** When the async jobs and async props have not been resolved yet, this component will be rendered.
+   However, if this prop is not specialized,
+   the wrapped component with default and partial resolved props will be rendered instead. */
   loadingComponent: func,
+  /** The error callback.
+   It will be called when a error is throwed
+   during the async jobs is running or the async props is resolved. */
   onError: func,
+  /** A number greater than 0 will force the wrapped component rendering with a delay. */
   delay: number,
 };
 

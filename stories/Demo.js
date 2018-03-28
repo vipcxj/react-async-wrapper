@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const AsyncDemo = ({
+const Demo = ({
   a, b, c, d,
 }) => (
   <ul>
-    <li>Async Demo</li>
     <li>{`a: ${a}`}</li>
     <li>{`b: ${b}`}</li>
     <li>{`c: ${c}`}</li>
@@ -13,18 +12,18 @@ const AsyncDemo = ({
   </ul>
 );
 
-AsyncDemo.propTypes = {
+Demo.propTypes = {
   a: PropTypes.string,
   b: PropTypes.string,
   c: PropTypes.string,
   d: PropTypes.string,
 };
 
-AsyncDemo.defaultProps = {
+Demo.defaultProps = {
   a: undefined,
   b: undefined,
   c: undefined,
   d: undefined,
 };
 
-export default AsyncDemo;
+export default Demo;
