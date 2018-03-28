@@ -2,6 +2,7 @@
   "name": "react-async-wrapper",
   "version": "0.1.4",
   "description": "resolve async props for react component",
+  "homepage": "https://vipcxj.github.io/react-async-wrapper",
   "main": "cjs/index.js",
   "module": "es/index.js",
   "files": [
