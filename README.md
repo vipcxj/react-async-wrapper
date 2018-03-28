@@ -8,6 +8,12 @@ Using [npm](https://www.npmjs.com/):
 
     $ npm install --save react-async-wrapper
     
+## Demo
+
+[storybook](https://vipcxj.github.io/react-async-wrapper/)
+
+## Example
+    
 ```javascript
 import { AsyncComponent } from 'react-async-wrapper';
 
