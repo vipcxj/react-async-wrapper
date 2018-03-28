@@ -49,7 +49,6 @@
     "@babel/preset-env": "^7.0.0-beta.42",
     "@babel/preset-react": "^7.0.0-beta.42",
     "@storybook/addon-info": "^3.3.15",
-    "@storybook/addon-storysource": "^3.4.0-alpha.8",
     "@storybook/react": "^3.3.15",
     "@storybook/storybook-deployer": "^2.3.0",
     "@types/lodash": "^4.14.105",
