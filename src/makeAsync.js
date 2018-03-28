@@ -4,7 +4,7 @@ import isPromise from 'is-promise';
 import hoistStatics from 'hoist-non-react-statics';
 import AsyncComponent, { DefaultErrorComponent, DefaultLoadingComponent } from './AsyncComponent';
 
-export default opts => (Comp) => {
+export default (opts = {}) => (Comp) => {
   const {
     batch = false,
     asyncJobs = [],
