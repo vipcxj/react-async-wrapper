@@ -25,7 +25,6 @@ class AsyncComponent extends Component {
   });
   constructor(props, ...args) {
     super(props, ...args);
-    this.errorComponent = null;
     this.state = {
       error: null,
       loading: true,
