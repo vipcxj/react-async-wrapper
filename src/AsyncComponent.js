@@ -178,6 +178,7 @@ class AsyncComponent extends Component {
       asyncPropsMapper,
       asyncComponent,
       children, // eslint-disable-line react/prop-types
+      unwrapDefault,
     } = this.props;
     let { syncProps } = this.props;
     let { component: Comp } = this.props;
@@ -211,6 +212,10 @@ class AsyncComponent extends Component {
       }
     }
     if (Comp) {
+      if (unwrapDefault) {
+        // eslint-disable-next-line no-underscore-dangle
+        Comp = Comp.default || Comp;
+      }
       return (!isStateless(Comp) && ref)
         ? <Comp {...(syncProps || {})} {...wrappedProps} ref={ref} progress={progress} />
         : <Comp {...(syncProps || {})} {...wrappedProps} progress={progress} />;
@@ -290,6 +295,11 @@ AsyncComponent.propTypes = {
   onError: func,
   /** A number greater than 0 will force the wrapped component rendering with a delay. */
   delay: number,
+  /** Useful when provide the asyncComponent with dynamic import method.
+   * The dynamic import method return a promise resolving a module object.
+   * However, we often need the module.default instead of the module itself.
+   * This option make the wrapper try to use module.default when available */
+  unwrapDefault: bool,
 };
 
 AsyncComponent.defaultProps = {
@@ -306,6 +316,7 @@ AsyncComponent.defaultProps = {
   loadingComponent: DefaultLoadingComponent,
   onError: () => null,
   delay: 0,
+  unwrapDefault: true,
 };
 
 export default AsyncComponent;
