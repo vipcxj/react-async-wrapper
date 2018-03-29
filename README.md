@@ -71,68 +71,79 @@ export const AsyncDemo = () => {
 
 ### AsyncComponent
 
+A wrapper component to make async job easy.
+
 #### Properties
-- *batch* - **bool** `false`
+- *batch* - **bool** - `false`
 
   If true, only when all async props are resolved, the wrapped component is rendered again. 
   Otherwise, the wrapped component will be updated when any async prop is resolved.
 
-- *asyncJobs* - **[ func() : (Promise\<any\> | any) ]** `[]`
+- *asyncJobs* - **[ func() : (Promise\<any\> | any) ]** - `[]`
 
   The async jobs. 
   Compared to async props, they will not provide the props to the wrapped component, 
   but they should be done before the wrapped component finally render.
   The word 'finally' means the wrapped component will be updated several time if 'batch' set to false.
   
-- *asyncProps* - **{ property: func( progressUpdater: ( func(number):void ) ) : (Promise\<any> | any) }** `{}`
+- *asyncProps* - **{ property: func( progressUpdater: ( func(number):void ) ) : (Promise\<any> | any) }** - `{}`
 
   All async props should be declared here.They should be functions. 
   If the function return a promise, it will be a real async prop, otherwise it is still a sync prop.
   The es6 async function is supported. In fact it is just a function return promise.
   The async component will provide every function with a method to update the progress which is a number range from 0 to 1.
   
-- *asyncPropOpts* - **{ property: { defaultProp: any } }** `{}`
+- *asyncPropOpts* - **{ property: { defaultProp: any } }** - `{}`
 
   The option of the async props. At this moment, only 'defaultProp' is supported.
   
-- *asyncPropsMapper* - **func( props: { property: any } ):{ property: any }** `props => props`
+- *asyncPropsMapper* - **func( props: { property: any } ):{ property: any }** - `props => props`
 
   Accept the resolved async props, and return the props provide to the wrapped component.
 
-- *syncProps* - **{ property: any }** `{}`
+- *syncProps* - **{ property: any }** - `{}`
 
   The sync props. This is useful when providing component or asyncComponent prop instead of children node as wrapped component.
   
-- *component* - **Component** `null`
+- *component* - **Component** - `null`
 
   If specialized, the async wrapper will use this as the wrapped component instead of the children components.
   
-- *asyncComponent* - **func() : ( Promise\<Component\> | Component )** `null`
+- *asyncComponent* - **func() : ( Promise\<Component\> | Component )** - `null`
 
   If specialized, the async wrapper will use this as the wrapped component when resolved instead of component prop and the children components.
   
-- *errorComponent* - **Component** `() => null`
+- *errorComponent* - **Component** - `() => null`
 
   This component will be used to show the error.
   
-- *loadingComponent* - **Component** `() => null`
+- *loadingComponent* - **Component** - `() => null`
 
   When the async jobs and async props have not been resolved yet, this component will be rendered. 
   However, if this prop is not specialized, the wrapped component with default and partial resolved props will be rendered instead.
   
-- *onError* - **func( error: any ) : void** `() => null`
+- *onError* - **func( error: any ) : void** - `() => null`
 
   The error callback. 
   It will be called when a error is throwed 
   during the async jobs is running or the async props is resolved.
   
-- *delay* - **number** : `0`
+- *delay* - **number** - `0`
 
   A number greater than 0 will force the wrapped component rendering with a delay.
+  
+- *unwrapDefault* - **bool** - `true`
+  
+  Useful when provide the asyncComponent with dynamic import method.
+  The dynamic import method return a promise resolving a module object.
+  However, we often need the module.default instead of the module itself.
+  This option make the wrapper try to use module.default when available
 
 ## API
 
 ### makeAsync
+
+A high order component version of **AsyncComponent**.
 
 #### signature
 
@@ -140,29 +151,31 @@ export const AsyncDemo = () => {
 
 #### params
 
-##### opts
+##### opts - **object**
 
 The options. Same as properties of `AsyncComponent`.
 
-- *batch* - **bool** `false`
+- *batch* - **bool** - `false`
 
-- *asyncJobs* - **[ func() : (Promise\<any\> | any) ]** `[]`
+- *asyncJobs* - **[ func() : (Promise\<any\> | any) ]** - `[]`
 
-- *asyncProps* - **{ property: func( progressUpdater: ( func(number):void ) ) : (Promise\<any> | any) }** `{}`
+- *asyncProps* - **{ property: func( progressUpdater: ( func(number):void ) ) : (Promise\<any> | any) }** - `{}`
 
-- *asyncPropOpts* - **{ property: { defaultProp: any } }** `{}`
+- *asyncPropOpts* - **{ property: { defaultProp: any } }** - `{}`
 
-- *asyncPropsMapper* - **func( props: { property: any } ):{ property: any }** `props => props`
+- *asyncPropsMapper* - **func( props: { property: any } ):{ property: any }** - `props => props`
 
-- *errorComponent* - **Component** `() => null`
+- *errorComponent* - **Component** - `() => null`
 
-- *loadingComponent* - **Component** `() => null`
+- *loadingComponent* - **Component** - `() => null`
 
-- *onError* - **func( error: any ) : void** `() => null`
+- *onError* - **func( error: any ) : void** - `() => null`
 
-- *delay* - **number** : `0`
+- *delay* - **number** - `0`
 
-##### component
+- *unwrapDefault* - **bool** - `true`
+
+##### component - **Component | Promise\<Component>**
 
 A react component or a Promise return a react component. The wrapped component.
 
