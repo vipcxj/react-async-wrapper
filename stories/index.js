@@ -191,15 +191,18 @@ storiesOf('make async', module)
     withInfo({
       source: false,
       text: 'With async props and using async component as wrapped component.\n' +
+      'With unwrapDefault off. So we should be careful to use `m.default`.\n' +
       '```javascript\n' +
-      'makeAsync({\n' +
+      'const Wrapped = makeAsync({\n' +
       '  asyncProps: {\n' +
       '    a: delayReturn(1, 1000),\n' +
       '    b: delayReturn(2, 3000),\n' +
       '    c: delayReturn(3, 2000),\n' +
       '    d: delayReturn(4, 4000),\n' +
       '  },\n' +
-      '})(import(\'./AsyncDemo\').then(m => m.default))\n' +
+      '  unwrapDefault: false,\n' +
+      '})(import(\'./AsyncDemo\').then(m => m.default));\n' +
+      'return <Wrapped />;\n' +
       '```',
     })(() => {
       const Wrapped = makeAsync({
@@ -209,7 +212,37 @@ storiesOf('make async', module)
           c: delayReturn(3, 2000),
           d: delayReturn(4, 4000),
         },
+        unwrapDefault: false,
       })(import('./AsyncDemo').then(m => m.default));
+      return <Wrapped />;
+    }),
+  )
+  .add(
+    'demo 3',
+    withInfo({
+      source: false,
+      text: 'With async props and using async component as wrapped component.\n' +
+      'With unwrapDefault on. So we can use the promise returned by dynamic directly.\n' +
+      '```javascript\n' +
+      'const Wrapped = makeAsync({\n' +
+      '  asyncProps: {\n' +
+      '    a: delayReturn(1, 1000),\n' +
+      '    b: delayReturn(2, 3000),\n' +
+      '    c: delayReturn(3, 2000),\n' +
+      '    d: delayReturn(4, 4000),\n' +
+      '  },\n' +
+      '})(import(\'./AsyncDemo\'));\n' +
+      'return <Wrapped />;\n' +
+      '```',
+    })(() => {
+      const Wrapped = makeAsync({
+        asyncProps: {
+          a: delayReturn(1, 1000),
+          b: delayReturn(2, 3000),
+          c: delayReturn(3, 2000),
+          d: delayReturn(4, 4000),
+        },
+      })(import('./AsyncDemo'));
       return <Wrapped />;
     }),
   );
