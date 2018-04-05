@@ -37,6 +37,9 @@ class AsyncComponent extends Component {
     this.mounted = true;
     this.load();
   }
+  componentWillReceiveProps() {
+    this.load();
+  }
 
   componentWillUnmount() {
     this.mounted = false;
@@ -78,6 +81,7 @@ class AsyncComponent extends Component {
     const {
       asyncComponent, asyncJobs, asyncProps, onError, delay,
     } = this.props;
+    this.setStateSafe({ loading: true });
     try {
       let pairs = [
         ...(asyncComponent ? [[SymbolComp, asyncComponent]] : []),
@@ -139,33 +143,30 @@ class AsyncComponent extends Component {
         Promise.all(promises).then((pairs) => {
           this.loadSuccess(pairs.filter(([k]) => typeof k !== 'symbol'));
         }).catch((e) => {
-          if (this.mounted) {
-            // noinspection JSCheckFunctionSignatures
-            this.setState({
+          try {
+            if (onError) {
+              onError(e);
+            }
+          } finally {
+            this.setStateSafe({
               error: e,
             });
-          } else {
-            this.state.error = e;
-          }
-          if (onError) {
-            onError(e);
           }
         }).finally(() => {
-          if (this.mounted) {
-            // noinspection JSCheckFunctionSignatures
-            this.setState({
-              loading: false,
-            });
-          } else {
-            this.state.loading = false;
-          }
+          this.setStateSafe({
+            loading: false,
+          });
         });
       } else {
         this.loadSuccess(pairs.filter(([k]) => typeof k !== 'symbol'));
       }
     } catch (error) {
-      if (onError) {
-        onError(error);
+      try {
+        if (onError) {
+          onError(error);
+        }
+      } finally {
+        this.setStateSafe({ loading: false });
       }
     }
   }
@@ -187,7 +188,7 @@ class AsyncComponent extends Component {
     } = this.state;
     let wrappedProps = asyncPropsMapper(Object.assign(
       {},
-      mapValues(asyncPropOpts, opt => opt.defaultProp, opt => opt && opt.defaultProp),
+      mapValues(asyncPropOpts, opt => opt.defaultProp, opt => opt && {}.hasOwnProperty.call(opt, 'defaultProp')),
       resolvedProps,
     ));
     let ref;
