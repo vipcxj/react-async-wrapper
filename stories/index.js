@@ -258,6 +258,17 @@ class TestUpdate extends React.Component {
   state = {
     value: 0,
   };
+  asyncProps = {
+    value: async () => {
+      await sleep(500);
+      return this.state.value;
+    },
+  };
+  asyncPropOpts = {
+    value: {
+      defaultProp: '',
+    },
+  };
   render() {
     const cb = () => {
       // noinspection JSCheckFunctionSignatures
@@ -267,17 +278,8 @@ class TestUpdate extends React.Component {
       <div>
         <button onClick={cb}>Click me</button>
         <AsyncComponent
-          asyncProps={{
-            value: async () => {
-              await sleep(500);
-              return this.state.value;
-            },
-          }}
-          asyncPropOpts={{
-            value: {
-              defaultProp: '',
-            },
-          }}
+          asyncProps={this.asyncProps}
+          asyncPropOpts={this.asyncPropOpts}
         >
           <TestUpdateWrapped />
         </AsyncComponent>

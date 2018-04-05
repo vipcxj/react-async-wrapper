@@ -1,3 +1,4 @@
+/* eslint-disable react/forbid-prop-types */
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -14,10 +15,10 @@ const AsyncDemo = ({
 );
 
 AsyncDemo.propTypes = {
-  a: PropTypes.string,
-  b: PropTypes.string,
-  c: PropTypes.string,
-  d: PropTypes.string,
+  a: PropTypes.any,
+  b: PropTypes.any,
+  c: PropTypes.any,
+  d: PropTypes.any,
 };
 
 AsyncDemo.defaultProps = {
