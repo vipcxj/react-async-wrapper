@@ -15,6 +15,7 @@ export default (opts = {}) => (Comp) => {
     loadingComponent = DefaultLoadingComponent,
     onError = () => null,
     delay = 0,
+    unwrapDefault = true,
   } = opts;
   const C = (props) => {
     const { wrappedComponentRef, ...remainingProps } = props;
@@ -28,6 +29,7 @@ export default (opts = {}) => (Comp) => {
       loadingComponent,
       onError,
       delay,
+      unwrapDefault,
       syncProps: {
         ...remainingProps,
         ref: wrappedComponentRef,
