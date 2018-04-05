@@ -23,12 +23,13 @@ const TableComponent = ({ propDefinitions }) => {
           let res;
           const out = [];
           let pos = 0;
+          let i = 0;
           while (res = reg.exec(value)) {
             if (res.index > pos) {
               out.push(value.slice(pos, res.index));
             }
             out.push(
-              <PrettyPropType key={key} propType={JSON.parse(res[0].slice(2, res[0].length - 2))} />
+              <PrettyPropType key={`${i++}`} propType={JSON.parse(res[0].slice(2, res[0].length - 2))} />
             );
             pos = res.index + res[0].length;
           }
@@ -41,7 +42,7 @@ const TableComponent = ({ propDefinitions }) => {
             return out[0];
           } else {
             return (
-              <span>
+              <span key={key}>
                 { out }
               </span>
             )
