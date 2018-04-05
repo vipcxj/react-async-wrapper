@@ -199,10 +199,18 @@ class AsyncComponent extends Component {
     }
     const { children: ignored, ...restResolvedProps } = wrappedProps;
     if (loading && LoadingComponent !== DefaultLoadingComponent) {
-      return <LoadingComponent {...this.props} {...restResolvedProps} progress={progress} />;
+      return <LoadingComponent {...this.props} {...restResolvedProps} loading={loading} progress={progress} />;
     }
     if (error) {
-      return <ErrorComponent {...this.props} {...restResolvedProps} progress={progress} error={error} />;
+      return (
+        <ErrorComponent
+          {...this.props}
+          {...restResolvedProps}
+          loading={loading}
+          progress={progress}
+          error={error}
+        />
+      );
     }
     if (asyncComponent) {
       if (this.state.component) {
@@ -217,14 +225,16 @@ class AsyncComponent extends Component {
         Comp = Comp.default || Comp;
       }
       return (!isStateless(Comp) && ref)
-        ? <Comp {...(syncProps || {})} {...wrappedProps} ref={ref} progress={progress} />
-        : <Comp {...(syncProps || {})} {...wrappedProps} progress={progress} />;
+        ? <Comp {...(syncProps || {})} {...wrappedProps} ref={ref} loading={loading} progress={progress} />
+        : <Comp {...(syncProps || {})} {...wrappedProps} loading={loading} progress={progress} />;
     }
     // noinspection JSUnresolvedFunction JSCheckFunctionSignatures
     const newChildren = React.Children
       .map(children, child => React.cloneElement(child, {
         ...(syncProps || {}),
         ...restResolvedProps,
+        loading,
+        progress,
       }));
     if (!newChildren) {
       return null;
