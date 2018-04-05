@@ -246,3 +246,45 @@ storiesOf('make async', module)
       return <Wrapped />;
     }),
   );
+
+const TestUpdateWrapped = ({ value, loading }) => (
+  <div>
+    { loading ? (<span>Loading ... <br /></span>) : null }
+    { `value: ${value}` }
+  </div>
+);
+
+class TestUpdate extends React.Component {
+  state = {
+    value: 0,
+  };
+  render() {
+    const cb = () => {
+      // noinspection JSCheckFunctionSignatures
+      this.setState(state => ({ value: state.value + 1 }));
+    };
+    return (
+      <div>
+        <button onClick={cb}>Click me</button>
+        <AsyncComponent
+          asyncProps={{
+            value: async () => {
+              await sleep(500);
+              return this.state.value;
+            },
+          }}
+          asyncPropOpts={{
+            value: {
+              defaultProp: '',
+            },
+          }}
+        >
+          <TestUpdateWrapped />
+        </AsyncComponent>
+      </div>
+    );
+  }
+}
+
+storiesOf('update async component', module)
+  .add('test 1', () => (<TestUpdate />));
