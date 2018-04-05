@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import isPromise from 'is-promise';
 import { some, toPairs, fromPairs, isFunction, mapValues } from './utils';
@@ -12,7 +12,7 @@ const SymbolJob = Symbol('job');
 
 const majorVersion = React.version ? Number.parseInt(React.version.slice(0, React.version.indexOf('.')), 10) : 0;
 
-class AsyncComponent extends Component {
+class AsyncComponent extends React.PureComponent {
   static updateResolvedProps = resolvedProps => preState => ({
     resolvedProps: {
       ...preState.resolvedProps,
@@ -40,7 +40,6 @@ class AsyncComponent extends Component {
   componentWillReceiveProps() {
     this.load();
   }
-
   componentWillUnmount() {
     this.mounted = false;
   }
