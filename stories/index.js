@@ -288,5 +288,37 @@ class TestUpdate extends React.Component {
   }
 }
 
+// eslint-disable-next-line react/no-multi-comp
+class TestUpdateWithWrong extends React.Component {
+  state = {
+    value: 0,
+  };
+  asyncPropOpts = {
+    value: {
+      defaultProp: '',
+    },
+  };
+  render() {
+    const cb = () => {
+      // noinspection JSCheckFunctionSignatures
+      this.setState(state => ({ value: state.value + 1 }));
+    };
+    return (
+      <div>
+        <button onClick={cb}>Click me</button>
+        <AsyncComponent
+          asyncProps={{
+            value: delayReturn(this.state.value, 500),
+          }}
+          asyncPropOpts={this.asyncPropOpts}
+        >
+          <TestUpdateWrapped />
+        </AsyncComponent>
+      </div>
+    );
+  }
+}
+
 storiesOf('update async component', module)
-  .add('test 1', () => (<TestUpdate />));
+  .add('test 1', () => (<TestUpdate />))
+  .add('test 2', () => (<TestUpdateWithWrong />));
