@@ -80,7 +80,11 @@ class AsyncComponent extends React.PureComponent {
     const {
       asyncComponent, asyncJobs, asyncProps, onError, delay,
     } = this.props;
-    this.setStateSafe({ loading: true });
+    this.setStateSafe({
+      error: null,
+      loading: true,
+      progress: fromPairs(Object.keys(asyncProps || {}).map(k => [k, 0])),
+    });
     try {
       let pairs = [
         ...(asyncComponent ? [[SymbolComp, asyncComponent]] : []),
