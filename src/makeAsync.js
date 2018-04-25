@@ -16,6 +16,8 @@ export default (opts = {}) => (Comp) => {
     onError = () => null,
     delay = 0,
     unwrapDefault = true,
+    reloadOnUpdate = true,
+    reloadDependents = null,
   } = opts;
   const C = (props) => {
     const { wrappedComponentRef, ...remainingProps } = props;
@@ -30,6 +32,8 @@ export default (opts = {}) => (Comp) => {
       onError,
       delay,
       unwrapDefault,
+      reloadOnUpdate,
+      reloadDependents,
       syncProps: {
         ...remainingProps,
         ref: wrappedComponentRef,

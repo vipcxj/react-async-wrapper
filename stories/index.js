@@ -288,6 +288,7 @@ class TestUpdate extends React.Component {
   }
 }
 
+// eslint-disable-next-line react/no-multi-comp
 class TestUpdateWithDependent extends React.Component {
   state = {
     value: 0,
