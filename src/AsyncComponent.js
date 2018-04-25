@@ -12,6 +12,27 @@ const SymbolJob = Symbol('job');
 
 const majorVersion = React.version ? Number.parseInt(React.version.slice(0, React.version.indexOf('.')), 10) : 0;
 
+const shallowEqual = (obj1, obj2) => {
+  if (obj1 === obj2) {
+    return true;
+  }
+  if (!obj1 || !obj2) {
+    return false;
+  }
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) {
+    return false;
+  }
+  for (let i = 0; i < keys1.length; ++i) {
+    const key = keys1[i];
+    if (obj1[key] !== obj2[key]) {
+      return false;
+    }
+  }
+  return true;
+};
+
 class AsyncComponent extends React.PureComponent {
   static updateResolvedProps = resolvedProps => preState => ({
     resolvedProps: {
@@ -37,8 +58,19 @@ class AsyncComponent extends React.PureComponent {
     this.mounted = true;
     this.load();
   }
-  componentWillReceiveProps() {
-    this.load();
+  componentWillReceiveProps(nextProps) {
+    let thisTarget;
+    let nextTarget;
+    if (nextProps.reloadDependents === null || nextProps.reloadDependents === undefined) {
+      thisTarget = this.props;
+      nextTarget = nextProps;
+    } else {
+      thisTarget = this.props.reloadDependents;
+      nextTarget = nextProps.reloadDependents;
+    }
+    if (nextProps.reloadOnUpdate && !shallowEqual(thisTarget, nextTarget)) {
+      this.load();
+    }
   }
   componentWillUnmount() {
     this.mounted = false;
@@ -314,6 +346,15 @@ AsyncComponent.propTypes = {
    * However, we often need the module.default instead of the module itself.
    * This option make the wrapper try to use module.default when available */
   unwrapDefault: bool,
+  /**
+   * Whether to reload the date when the AsyncComponent is updated.
+   */
+  reloadOnUpdate: bool,
+  /**
+   * Using shallow equal to decide whether to reload. Only valid when reloadOnUpdate is true.
+   * If set null or undefined, means use all props to decide.
+   */
+  reloadDependents: objectOf(any),
 };
 
 AsyncComponent.defaultProps = {
@@ -331,6 +372,8 @@ AsyncComponent.defaultProps = {
   onError: () => null,
   delay: 0,
   unwrapDefault: true,
+  reloadOnUpdate: true,
+  reloadDependents: null,
 };
 
 export default AsyncComponent;

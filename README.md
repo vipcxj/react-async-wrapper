@@ -138,7 +138,16 @@ A wrapper component to make async job easy.
   The dynamic import method return a promise resolving a module object.
   However, we often need the module.default instead of the module itself.
   This option make the wrapper try to use module.default when available
+  
+- *reloadOnUpdate* - **bool** - `true`
 
+  Whether to reload when the AsyncComponent is updated.
+
+- *reloadDependents* - **{ property: any }** - `null`
+
+  Using shallow equal to decide whether to reload. Only valid when reloadOnUpdate is true.
+  If set null or undefined, means use all props to decide.
+  
 ## API
 
 ### makeAsync
@@ -174,6 +183,10 @@ The options. Same as properties of `AsyncComponent`.
 - *delay* - **number** - `0`
 
 - *unwrapDefault* - **bool** - `true`
+
+- *reloadOnUpdate* - **bool** - `true`
+
+- *reloadDependents* - **{ property: any }** - `null`
 
 ##### component - **Component | Promise\<Component>**
 

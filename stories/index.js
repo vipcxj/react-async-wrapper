@@ -288,6 +288,42 @@ class TestUpdate extends React.Component {
   }
 }
 
+class TestUpdateWithDependent extends React.Component {
+  state = {
+    value: 0,
+  };
+  asyncProps = {
+    value: async () => {
+      await sleep(500);
+      return this.state.value;
+    },
+  };
+  asyncPropOpts = {
+    value: {
+      defaultProp: '',
+    },
+  };
+  render() {
+    const cb = () => {
+      // noinspection JSCheckFunctionSignatures
+      this.setState(state => ({ value: state.value + 1 }));
+    };
+    return (
+      <div>
+        <button onClick={cb}>Click me</button>
+        <AsyncComponent
+          asyncProps={this.asyncProps}
+          asyncPropOpts={this.asyncPropOpts}
+          reloadOnUpdate
+          reloadDependents={{ value: this.state.value }}
+        >
+          <TestUpdateWrapped />
+        </AsyncComponent>
+      </div>
+    );
+  }
+}
+
 // eslint-disable-next-line react/no-multi-comp
 class TestUpdateWithWrong extends React.Component {
   state = {
@@ -320,5 +356,6 @@ class TestUpdateWithWrong extends React.Component {
 }
 
 storiesOf('update async component', module)
-  .add('test 1', () => (<TestUpdate />))
-  .add('test 2', () => (<TestUpdateWithWrong />));
+  .add('test update', () => (<TestUpdate />))
+  .add('test update with dependent', () => (<TestUpdateWithDependent />))
+  .add('test update with wrong', () => (<TestUpdateWithWrong />));
