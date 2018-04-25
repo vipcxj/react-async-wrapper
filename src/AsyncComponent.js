@@ -372,7 +372,7 @@ AsyncComponent.defaultProps = {
   onError: () => null,
   delay: 0,
   unwrapDefault: true,
-  reloadOnUpdate: true,
+  reloadOnUpdate: false,
   reloadDependents: null,
 };
 

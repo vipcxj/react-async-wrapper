@@ -16,7 +16,7 @@ export default (opts = {}) => (Comp) => {
     onError = () => null,
     delay = 0,
     unwrapDefault = true,
-    reloadOnUpdate = true,
+    reloadOnUpdate = false,
     reloadDependents = null,
   } = opts;
   const C = (props) => {

@@ -280,6 +280,7 @@ class TestUpdate extends React.Component {
         <AsyncComponent
           asyncProps={this.asyncProps}
           asyncPropOpts={this.asyncPropOpts}
+          reloadOnUpdate
         >
           <TestUpdateWrapped />
         </AsyncComponent>
@@ -348,6 +349,7 @@ class TestUpdateWithWrong extends React.Component {
             value: delayReturn(this.state.value, 500),
           }}
           asyncPropOpts={this.asyncPropOpts}
+          reloadOnUpdate
         >
           <TestUpdateWrapped />
         </AsyncComponent>

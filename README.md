@@ -139,7 +139,7 @@ A wrapper component to make async job easy.
   However, we often need the module.default instead of the module itself.
   This option make the wrapper try to use module.default when available
   
-- *reloadOnUpdate* - **bool** - `true`
+- *reloadOnUpdate* - **bool** - `false`
 
   Whether to reload when the AsyncComponent is updated.
 
@@ -184,7 +184,7 @@ The options. Same as properties of `AsyncComponent`.
 
 - *unwrapDefault* - **bool** - `true`
 
-- *reloadOnUpdate* - **bool** - `true`
+- *reloadOnUpdate* - **bool** - `false`
 
 - *reloadDependents* - **{ property: any }** - `null`
 
