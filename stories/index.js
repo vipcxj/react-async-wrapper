@@ -4,36 +4,9 @@ import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 
 import { AsyncComponent, makeAsync } from '../src';
-import Demo from './Demo';
-
-const sleep = async t => new Promise(resolve => setTimeout(resolve, t));
-
-const delayReturn = (v, t) => async () => {
-  await sleep(t);
-  return v;
-};
-
-const progressReturn = (v, t) => async (updater) => {
-  const step = t / 100;
-  for (let i = 0; i < 100; ++i) {
-    // eslint-disable-next-line no-await-in-loop
-    await sleep(step);
-    updater(i / 100);
-  }
-  return v;
-};
-
-const SimpleLoading = () => 'Loading ...';
-const ProgressLoading = ({
-  progress,
-}) => (
-  <ul>
-    <li>{`a: ${(progress.a * 100).toFixed()}%`}</li>
-    <li>{`b: ${(progress.b * 100).toFixed()}%`}</li>
-    <li>{`c: ${(progress.c * 100).toFixed()}%`}</li>
-    <li>{`d: ${(progress.d * 100).toFixed()}%`}</li>
-  </ul>
-);
+import { sleep, delayReturn, progressReturn } from './utils';
+import Demo, { SimpleLoading, ProgressLoading } from './Demo';
+import ReloaderDemo from './ReloaderDemo';
 
 // noinspection JSUnresolvedFunction
 storiesOf('async component', module)
@@ -154,6 +127,44 @@ storiesOf('async component', module)
           <Demo />
         </AsyncComponent>
     )),
+  )
+  .add(
+    'demo 9',
+    withInfo({
+      source: false,
+      propTables: [],
+      text: 'Using reloader. ' +
+      '`AsyncComponent.createReloader` will create a reloader ' +
+      'which can be used to force reload.\n' +
+      '```javascript\n' +
+      'class ReloaderDemo extends React.PureComponent {\n' +
+      '  constructor(props, context) {\n' +
+      '    super(props, context);\n' +
+      '    this.reloader = AsyncComponent.createReloader(this);\n' +
+      '  }\n' +
+      '\n' +
+      '  render() {\n' +
+      '    return (\n' +
+      '      <div>\n' +
+      '        <button onClick={() => this.reloader.reload()}>reload</button>\n' +
+      '        <AsyncComponent\n' +
+      '          loadingComponent={ProgressLoading}\n' +
+      '          reloader={this.reloader}\n' +
+      '          asyncProps={{\n' +
+      '            a: progressReturn(1, 4000),\n' +
+      '            b: progressReturn(2, 3000),\n' +
+      '            c: progressReturn(3, 2000),\n' +
+      '            d: progressReturn(4, 1000),\n' +
+      '          }}\n' +
+      '        >\n' +
+      '          <Demo />\n' +
+      '        </AsyncComponent>\n' +
+      '      </div>\n' +
+      '    );\n' +
+      '  }\n' +
+      '}' +
+      '```',
+    })(() => <ReloaderDemo />),
   );
 
 // noinspection JSUnresolvedFunction

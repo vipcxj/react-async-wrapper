@@ -28,3 +28,16 @@ Demo.defaultProps = {
 };
 
 export default Demo;
+
+export const SimpleLoading = () => 'Loading ...';
+export const ProgressLoading = ({
+  // eslint-disable-next-line react/prop-types
+  progress,
+}) => (
+  <ul>
+    <li>{`a: ${(progress.a * 100).toFixed()}%`}</li>
+    <li>{`b: ${(progress.b * 100).toFixed()}%`}</li>
+    <li>{`c: ${(progress.c * 100).toFixed()}%`}</li>
+    <li>{`d: ${(progress.d * 100).toFixed()}%`}</li>
+  </ul>
+);
