@@ -145,10 +145,35 @@ A wrapper component to make async job easy.
 
 - *reloadDependents* - **{ property: any }** - `null`
 
-  Using shallow equal to decide whether to reload. Only valid when reloadOnUpdate is true.
+  The dependents which using to decide whether to reload. Shallow equal is used to compare changed.
+  Only valid when reloadOnUpdate is true.
   If set null or undefined, means use all props to decide.
   
+- *reloader* - **{ reload: func, isReload: func, resetReload: func,}** - `null`
+
+  An object create by `AsyncComponent.createReloader`, 
+  The api `reloader.reload()` can be used to force a reload task.
+  
 ## API
+
+### AsyncComponent.createReloader
+
+Create an reloader object which can be used to force a reload task.
+
+#### signature
+
+`(compInst: object) => { reload: () => null }`
+
+#### params
+
+##### compInst - **object**
+
+The react component instance, usually the component instance which using the AsyncComponent.
+
+#### return
+
+An reloader object, which should be used as the 'reloader' prop of the AsyncComponent.
+On the other side, `reloader.reload()` will force the AsyncComponent to be reload.
 
 ### makeAsync
 
@@ -192,3 +217,6 @@ The options. Same as properties of `AsyncComponent`.
 
 A react component or a Promise return a react component. The wrapped component.
 
+#### return
+
+A high order component version of **AsyncComponent**.
