@@ -326,6 +326,7 @@ const {
   any,
   bool,
   number,
+  object,
   objectOf,
   func,
   oneOfType,
@@ -362,17 +363,17 @@ AsyncComponent.propTypes = {
   syncProps: objectOf(any),
   /** If specialized, the async wrapper will use this as the wrapped component
    *  instead of the children components. */
-  component: func,
+  component: oneOfType(func, object),
   /** If specialized, the async wrapper will use this as the wrapped component
    *  when resolved instead of component prop and the children components. */
   asyncComponent: func,
   children: oneOfType([element, arrayOf(element)]),
   /** This component will be used to show the error. */
-  errorComponent: func,
+  errorComponent: oneOfType(func, object),
   /** When the async jobs and async props have not been resolved yet, this component will be rendered.
    However, if this prop is not specialized,
    the wrapped component with default and partial resolved props will be rendered instead. */
-  loadingComponent: func,
+  loadingComponent: oneOfType(func, object),
   /** The error callback.
    It will be called when a error is throwed
    during the async jobs is running or the async props is resolved. */
