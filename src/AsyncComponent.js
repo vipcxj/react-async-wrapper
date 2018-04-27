@@ -12,26 +12,38 @@ const SymbolJob = Symbol('job');
 
 const majorVersion = React.version ? Number.parseInt(React.version.slice(0, React.version.indexOf('.')), 10) : 0;
 
-const shallowEqual = (obj1, obj2) => {
-  if (obj1 === obj2) {
+export function shallowEqual(o1, o2, excludes = []) {
+  if (o1 === o2) {
     return true;
   }
-  if (!obj1 || !obj2) {
+  if (typeof o1 !== 'object' || typeof o2 !== 'object' || o1 === null || o2 === null) {
     return false;
   }
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
+  if (Array.isArray(o1) && Array.isArray(o2)) {
+    const len = o1.length;
+    if (len !== o2.length) {
+      return false;
+    }
+    for (let i = 0; i < len; ++i) {
+      if (o1[i] !== o2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+  const keys1 = Object.keys(o1);
+  const keys2 = Object.keys(o2);
   if (keys1.length !== keys2.length) {
     return false;
   }
   for (let i = 0; i < keys1.length; ++i) {
     const key = keys1[i];
-    if (obj1[key] !== obj2[key]) {
+    if (!excludes.includes(key) && (!keys2.includes(key) || o1[key] !== o2[key])) {
       return false;
     }
   }
   return true;
-};
+}
 
 class AsyncComponent extends React.PureComponent {
   static updateResolvedProps = resolvedProps => preState => ({
@@ -59,17 +71,25 @@ class AsyncComponent extends React.PureComponent {
     this.load();
   }
   componentWillReceiveProps(nextProps) {
-    let thisTarget;
-    let nextTarget;
-    if (nextProps.reloadDependents === null || nextProps.reloadDependents === undefined) {
-      thisTarget = this.props;
-      nextTarget = nextProps;
-    } else {
-      thisTarget = this.props.reloadDependents;
-      nextTarget = nextProps.reloadDependents;
+    // noinspection JSUnresolvedFunction
+    if (nextProps.reloader && nextProps.reloader.isReload()) {
+      // noinspection JSUnresolvedFunction
+      nextProps.reloader.resetReload();
+      if (!this.state.loading) {
+        this.load();
+      }
     }
-    if (nextProps.reloadOnUpdate && !shallowEqual(thisTarget, nextTarget)) {
-      this.load();
+    if (nextProps.reloadOnUpdate && !this.state.loading) {
+      if (nextProps.reloadDependents === null || nextProps.reloadDependents === undefined) {
+        if (!shallowEqual(this.props, nextProps, [
+          'batch', 'errorComponent', 'loadingComponent',
+          'onError', 'delay', 'reloadOnUpdate', 'reloadDependents', 'reloader',
+        ])) {
+          this.load();
+        }
+      } else if (!shallowEqual(this.props.reloadDependents, nextProps.reloadDependents)) {
+        this.load();
+      }
     }
   }
   componentWillUnmount() {
@@ -284,6 +304,24 @@ class AsyncComponent extends React.PureComponent {
   }
 }
 
+AsyncComponent.createReloader = (compInst) => {
+  let forceReload = false;
+  return {
+    reload() {
+      forceReload = true;
+      compInst.setState({
+        __reloader__3yPbia72w46: {},
+      });
+    },
+    isReload() {
+      return forceReload;
+    },
+    resetReload() {
+      forceReload = false;
+    },
+  };
+};
+
 const {
   any,
   bool,
@@ -351,10 +389,20 @@ AsyncComponent.propTypes = {
    */
   reloadOnUpdate: bool,
   /**
-   * Using shallow equal to decide whether to reload. Only valid when reloadOnUpdate is true.
+   * The dependents which using to decide whether to reload. Shallow equal is used to compare changed.
+   * Only valid when reloadOnUpdate is true.
    * If set null or undefined, means use all props to decide.
    */
   reloadDependents: objectOf(any),
+  /**
+   * An object create by `AsyncComponent.createReloader`,
+   * The api `reloader.reload()` can be used to force a reload task.
+   */
+  reloader: shape({
+    reload: func,
+    isReload: func,
+    resetReload: func,
+  }),
 };
 
 AsyncComponent.defaultProps = {
@@ -374,6 +422,7 @@ AsyncComponent.defaultProps = {
   unwrapDefault: true,
   reloadOnUpdate: false,
   reloadDependents: null,
+  reloader: null,
 };
 
 export default AsyncComponent;
