@@ -1,6 +1,6 @@
 {
   "name": "react-async-wrapper",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "resolve async props for react component",
   "homepage": "https://vipcxj.github.io/react-async-wrapper",
   "main": "cjs/index.js",
