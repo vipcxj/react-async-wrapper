@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import isPromise from 'is-promise';
 import { some, toPairs, fromPairs, isFunction, mapValues } from './utils';
 
-const isStateless = Component => !Component.prototype.render;
+const isStateless = Component => !Component.prototype || !Component.prototype.render;
 export const DefaultLoadingComponent = () => null;
 export const DefaultErrorComponent = () => null;
 const SymbolComp = Symbol('component');
