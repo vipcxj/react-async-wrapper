@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
 import PropTypes from 'prop-types';
 import cs from 'classnames';
@@ -15,6 +16,7 @@ class Code extends React.Component {
     this.codeEl = el;
   };
   highlightCode = () => {
+    // noinspection JSUnresolvedFunction
     hljs.highlightBlock(this.codeEl);
   };
 
@@ -34,6 +36,7 @@ class Code extends React.Component {
   }
 }
 
+// noinspection JSUnresolvedVariable
 Code.propTypes = {
   value: PropTypes.string,
   code: PropTypes.node,
@@ -42,6 +45,8 @@ Code.propTypes = {
 
 Code.defaultProps = {
   language: '',
+  value: null,
+  code: null,
 };
 
 export default Code;

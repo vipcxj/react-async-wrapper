@@ -4,19 +4,41 @@ import { storiesOf } from '@storybook/react';
 import { withInfo } from '@storybook/addon-info';
 
 import { AsyncComponent, makeAsync } from '../src';
-import { sleep, delayReturn, progressReturn } from './utils';
+import { sleep, progressReturn } from './utils';
 import Demo, { SimpleLoading, ProgressLoading } from './Demo';
 import ReloaderDemo from './ReloaderDemo';
+import TableComponent from './TableComponent';
+import Code from './Code';
 
-// noinspection JSUnresolvedFunction
+const delayReturn = (v, t) => async () => {
+  await sleep(t);
+  return v;
+};
+
+// noinspection JSUnusedGlobalSymbols
+const infoConfig = {
+  inline: true,
+  maxPropsIntoLine: 1,
+  TableComponent,
+  components: {
+    code: Code,
+  },
+};
+
+// noinspection JSUnresolvedFunction, BadExpressionStatementJS
 storiesOf('async component', module)
+  .addDecorator(withInfo)
+  .addParameters({
+    info: infoConfig,
+  })
   .add(
     'demo 1',
-    withInfo('No async wrapper.')(() => <Demo a={1} b={2} c={3} d={4} />),
+    () => <Demo a={1} b={2} c={3} d={4} />,
+    { info: 'No async wrapper.' },
   )
   .add(
     'demo 2',
-    withInfo('Only sync props, behavior same as the wrapped component, no async loading.')(() => (
+    () => (
       <AsyncComponent asyncProps={{
         a: () => 1,
         b: () => 2,
@@ -26,11 +48,12 @@ storiesOf('async component', module)
       >
         <Demo />
       </AsyncComponent>
-    )),
+    ),
+    { info: 'Only sync props, behavior same as the wrapped component, no async loading.' },
   )
   .add(
     'demo 3',
-    withInfo('With async props. No loading component. So the wrapped behavior as the loading component.')(() => (
+    () => (
       <AsyncComponent asyncProps={{
         a: delayReturn(1, 1000),
         b: delayReturn(2, 1100),
@@ -40,11 +63,12 @@ storiesOf('async component', module)
       >
         <Demo />
       </AsyncComponent>
-    )),
+    ),
+    { info: 'With async props. No loading component. So the wrapped behavior as the loading component.' },
   )
   .add(
     'demo 4',
-    withInfo('With async props, default props and batch on, no loading component.')(() => (
+    () => (
       <AsyncComponent
         asyncProps={{
           a: delayReturn(1, 500),
@@ -62,11 +86,12 @@ storiesOf('async component', module)
       >
         <Demo />
       </AsyncComponent>
-    )),
+    ),
+    { info: 'With async props, default props and batch on, no loading component.' },
   )
   .add(
     'demo 5',
-    withInfo('With async props, default props and batch off, no loading component.')(() => (
+    () => (
       <AsyncComponent
         asyncProps={{
           a: delayReturn(1, 500),
@@ -84,19 +109,21 @@ storiesOf('async component', module)
       >
         <Demo />
       </AsyncComponent>
-    )),
+    ),
+    { info: 'With async props, default props and batch off, no loading component.' },
   )
   .add(
     'demo 6',
-    withInfo('With delay and a simple loading. No async jobs, props and component.')(() => (
+    () => (
       <AsyncComponent loadingComponent={SimpleLoading} delay={3000}>
         <Demo a={1} b={2} c={3} d={4} />
       </AsyncComponent>
-    )),
+    ),
+    { info: 'With delay and a simple loading. No async jobs, props and component.' },
   )
   .add(
     'demo 7',
-    withInfo('Basic usage, with async props and a simple loading component.')(() => (
+    () => (
       <AsyncComponent
         loadingComponent={SimpleLoading}
         asyncProps={{
@@ -108,84 +135,81 @@ storiesOf('async component', module)
       >
         <Demo />
       </AsyncComponent>
-    )),
+    ),
+    { info: 'Basic usage, with async props and a simple loading component.' },
   )
   .add(
     'demo 8',
-    withInfo('Show progress of async loading. '
-      + 'A `progress` prop will be send to the loading component'
-      + ' and the wrapped component.')(() => (
-        <AsyncComponent
-          loadingComponent={ProgressLoading}
-          asyncProps={{
+    () => (
+      <AsyncComponent
+        loadingComponent={ProgressLoading}
+        asyncProps={{
           a: progressReturn(1, 4000),
           b: progressReturn(2, 3000),
           c: progressReturn(3, 2000),
           d: progressReturn(4, 1000),
         }}
-        >
-          <Demo />
-        </AsyncComponent>
-    )),
+      >
+        <Demo />
+      </AsyncComponent>
+    ),
+    {
+      info: 'Show progress of async loading. '
+      + 'A `progress` prop will be send to the loading component'
+      + ' and the wrapped component.',
+    },
   )
   .add(
     'demo 9',
-    withInfo({
-      source: false,
-      propTables: [],
-      text: 'Using reloader. ' +
-      '`AsyncComponent.createReloader` will create a reloader ' +
-      'which can be used to force reload.\n' +
-      '```javascript\n' +
-      'class ReloaderDemo extends React.PureComponent {\n' +
-      '  constructor(props, context) {\n' +
-      '    super(props, context);\n' +
-      '    this.reloader = AsyncComponent.createReloader(this);\n' +
-      '  }\n' +
-      '\n' +
-      '  render() {\n' +
-      '    return (\n' +
-      '      <div>\n' +
-      '        <button onClick={() => this.reloader.reload()}>reload</button>\n' +
-      '        <AsyncComponent\n' +
-      '          loadingComponent={ProgressLoading}\n' +
-      '          reloader={this.reloader}\n' +
-      '          asyncProps={{\n' +
-      '            a: progressReturn(1, 4000),\n' +
-      '            b: progressReturn(2, 3000),\n' +
-      '            c: progressReturn(3, 2000),\n' +
-      '            d: progressReturn(4, 1000),\n' +
-      '          }}\n' +
-      '        >\n' +
-      '          <Demo />\n' +
-      '        </AsyncComponent>\n' +
-      '      </div>\n' +
-      '    );\n' +
-      '  }\n' +
-      '}' +
-      '```',
-    })(() => <ReloaderDemo />),
+    () => <ReloaderDemo />,
+    {
+      info: {
+        source: false,
+        propTables: [],
+        text: 'Using reloader. ' +
+        '`AsyncComponent.createReloader` will create a reloader ' +
+        'which can be used to force reload.\n' +
+        '```javascript\n' +
+        'class ReloaderDemo extends React.PureComponent {\n' +
+        '  constructor(props, context) {\n' +
+        '    super(props, context);\n' +
+        '    this.reloader = AsyncComponent.createReloader(this);\n' +
+        '  }\n' +
+        '\n' +
+        '  render() {\n' +
+        '    return (\n' +
+        '      <div>\n' +
+        '        <button onClick={() => this.reloader.reload()}>reload</button>\n' +
+        '        <AsyncComponent\n' +
+        '          loadingComponent={ProgressLoading}\n' +
+        '          reloader={this.reloader}\n' +
+        '          asyncProps={{\n' +
+        '            a: progressReturn(1, 4000),\n' +
+        '            b: progressReturn(2, 3000),\n' +
+        '            c: progressReturn(3, 2000),\n' +
+        '            d: progressReturn(4, 1000),\n' +
+        '          }}\n' +
+        '        >\n' +
+        '          <Demo />\n' +
+        '        </AsyncComponent>\n' +
+        '      </div>\n' +
+        '    );\n' +
+        '  }\n' +
+        '}' +
+        '```',
+      },
+    },
   );
 
 // noinspection JSUnresolvedFunction
 storiesOf('make async', module)
+  .addDecorator(withInfo)
+  .addParameters({
+    info: infoConfig,
+  })
   .add(
     'demo 1',
-    withInfo({
-      source: false,
-      propTables: [],
-      text: 'Basic usage, just with async props.\n' +
-      '```javascript\n' +
-      'makeAsync({\n' +
-      '  asyncProps: {\n' +
-      '    a: delayReturn(1, 1000),\n' +
-      '    b: delayReturn(2, 3000),\n' +
-      '    c: delayReturn(3, 2000),\n' +
-      '    d: delayReturn(4, 4000),\n' +
-      '  },\n' +
-      '})(Demo)' +
-      '```',
-    })(() => {
+    () => {
       const Wrapped = makeAsync({
         asyncProps: {
           a: delayReturn(1, 1000),
@@ -195,27 +219,28 @@ storiesOf('make async', module)
         },
       })(Demo);
       return <Wrapped />;
-    }),
+    },
+    {
+      info: {
+        source: false,
+        propTables: [],
+        text: 'Basic usage, just with async props.\n' +
+        '```javascript\n' +
+        'makeAsync({\n' +
+        '  asyncProps: {\n' +
+        '    a: delayReturn(1, 1000),\n' +
+        '    b: delayReturn(2, 3000),\n' +
+        '    c: delayReturn(3, 2000),\n' +
+        '    d: delayReturn(4, 4000),\n' +
+        '  },\n' +
+        '})(Demo)' +
+        '```',
+      },
+    },
   )
   .add(
     'demo 2',
-    withInfo({
-      source: false,
-      text: 'With async props and using async component as wrapped component.\n' +
-      'With unwrapDefault off. So we should be careful to use `m.default`.\n' +
-      '```javascript\n' +
-      'const Wrapped = makeAsync({\n' +
-      '  asyncProps: {\n' +
-      '    a: delayReturn(1, 1000),\n' +
-      '    b: delayReturn(2, 3000),\n' +
-      '    c: delayReturn(3, 2000),\n' +
-      '    d: delayReturn(4, 4000),\n' +
-      '  },\n' +
-      '  unwrapDefault: false,\n' +
-      '})(import(\'./AsyncDemo\').then(m => m.default));\n' +
-      'return <Wrapped />;\n' +
-      '```',
-    })(() => {
+    () => {
       const Wrapped = makeAsync({
         asyncProps: {
           a: delayReturn(1, 1000),
@@ -226,26 +251,30 @@ storiesOf('make async', module)
         unwrapDefault: false,
       })(import('./AsyncDemo').then(m => m.default));
       return <Wrapped />;
-    }),
+    },
+    {
+      info: {
+        source: false,
+        text: 'With async props and using async component as wrapped component.\n' +
+        'With unwrapDefault off. So we should be careful to use `m.default`.\n' +
+        '```javascript\n' +
+        'const Wrapped = makeAsync({\n' +
+        '  asyncProps: {\n' +
+        '    a: delayReturn(1, 1000),\n' +
+        '    b: delayReturn(2, 3000),\n' +
+        '    c: delayReturn(3, 2000),\n' +
+        '    d: delayReturn(4, 4000),\n' +
+        '  },\n' +
+        '  unwrapDefault: false,\n' +
+        '})(import(\'./AsyncDemo\').then(m => m.default));\n' +
+        'return <Wrapped />;\n' +
+        '```',
+      },
+    },
   )
   .add(
     'demo 3',
-    withInfo({
-      source: false,
-      text: 'With async props and using async component as wrapped component.\n' +
-      'With unwrapDefault on. So we can use the promise returned by dynamic directly.\n' +
-      '```javascript\n' +
-      'const Wrapped = makeAsync({\n' +
-      '  asyncProps: {\n' +
-      '    a: delayReturn(1, 1000),\n' +
-      '    b: delayReturn(2, 3000),\n' +
-      '    c: delayReturn(3, 2000),\n' +
-      '    d: delayReturn(4, 4000),\n' +
-      '  },\n' +
-      '})(import(\'./AsyncDemo\'));\n' +
-      'return <Wrapped />;\n' +
-      '```',
-    })(() => {
+    () => {
       const Wrapped = makeAsync({
         asyncProps: {
           a: delayReturn(1, 1000),
@@ -255,7 +284,25 @@ storiesOf('make async', module)
         },
       })(import('./AsyncDemo'));
       return <Wrapped />;
-    }),
+    },
+    {
+      info: {
+        source: false,
+        text: 'With async props and using async component as wrapped component.\n' +
+        'With unwrapDefault on. So we can use the promise returned by dynamic directly.\n' +
+        '```javascript\n' +
+        'const Wrapped = makeAsync({\n' +
+        '  asyncProps: {\n' +
+        '    a: delayReturn(1, 1000),\n' +
+        '    b: delayReturn(2, 3000),\n' +
+        '    c: delayReturn(3, 2000),\n' +
+        '    d: delayReturn(4, 4000),\n' +
+        '  },\n' +
+        '})(import(\'./AsyncDemo\'));\n' +
+        'return <Wrapped />;\n' +
+        '```',
+      },
+    },
   );
 
 const TestUpdateWrapped = ({ value, loading }) => (
