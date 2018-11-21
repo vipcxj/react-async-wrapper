@@ -19,33 +19,36 @@ export default (opts = {}) => (Comp) => {
     reloadOnUpdate = false,
     reloadDependents = null,
   } = opts;
-  const C = (props) => {
-    const { wrappedComponentRef, ...remainingProps } = props;
-    const wrapperProps = {
-      batch,
-      asyncJobs,
-      asyncProps,
-      asyncPropOpts,
-      asyncPropsMapper,
-      errorComponent,
-      loadingComponent,
-      onError,
-      delay,
-      unwrapDefault,
-      reloadOnUpdate,
-      reloadDependents,
-      syncProps: {
-        ...remainingProps,
-        ref: wrappedComponentRef,
-      },
-    };
-    if (isPromise(Comp)) {
-      wrapperProps.asyncComponent = () => Comp;
-    } else {
-      wrapperProps.component = Comp;
+  // eslint-disable-next-line
+  class C extends React.Component {
+    render() {
+      const { wrappedComponentRef, ...remainingProps } = this.props;
+      const wrapperProps = {
+        batch,
+        asyncJobs,
+        asyncProps,
+        asyncPropOpts,
+        asyncPropsMapper,
+        errorComponent,
+        loadingComponent,
+        onError,
+        delay,
+        unwrapDefault,
+        reloadOnUpdate,
+        reloadDependents,
+        syncProps: {
+          ...remainingProps,
+          ref: wrappedComponentRef,
+        },
+      };
+      if (isPromise(Comp)) {
+        wrapperProps.asyncComponent = () => Comp;
+      } else {
+        wrapperProps.component = Comp;
+      }
+      return <AsyncComponent {...wrapperProps} />;
     }
-    return <AsyncComponent {...wrapperProps} />;
-  };
+  }
   C.displayName = `makeAsync(${!isPromise(Comp) ? (Comp.displayName || Comp.name) : 'Unknown'})`;
   C.propTypes = {
     // eslint-disable-next-line
